@@ -1,4 +1,4 @@
-package com.helkor.project.buttons;
+package com.helkor.project;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;

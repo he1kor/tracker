@@ -3,23 +3,15 @@ package com.helkor.project;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.helkor.project.buttons.ButtonStart;
-import com.helkor.project.buttons.LineDrawer;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.geometry.Circle;
