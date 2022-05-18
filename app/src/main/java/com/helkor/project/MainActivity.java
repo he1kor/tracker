@@ -1,41 +1,20 @@
 package com.helkor.project;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.buttons.MapSensor;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
-import com.yandex.mapkit.geometry.Circle;
-import com.yandex.mapkit.geometry.Point;
-import com.yandex.mapkit.geometry.Polyline;
 import com.yandex.mapkit.location.FilteringMode;
 import com.yandex.mapkit.location.LocationManager;
-import com.yandex.mapkit.map.CircleMapObject;
-import com.yandex.mapkit.map.InputListener;
-import com.yandex.mapkit.map.Map;
-import com.yandex.mapkit.map.MapObject;
-import com.yandex.mapkit.map.MapObjectCollection;
-import com.yandex.mapkit.map.MapObjectTapListener;
 import com.yandex.mapkit.map.MapType;
-import com.yandex.mapkit.map.PlacemarkMapObject;
-import com.yandex.mapkit.map.PolylineMapObject;
 import com.yandex.mapkit.mapview.MapView;
 import com.yandex.mapkit.user_location.UserLocationLayer;
-import com.yandex.runtime.image.ImageProvider;
-import com.yandex.runtime.ui_view.ViewProvider;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,24 +26,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView test_text;
     RelativeLayout relative;
 
-    private MapObjectCollection mapObjects;
-    private Handler animationHandler;
-
     public final int COMFORTABLE_ZOOM_LEVEL = 16;
-
-    private InputListener inputListener = new InputListener() {
-        private Point point;
-
-        @Override
-        public void onMapTap(@NonNull Map map, @NonNull Point point) {
-            this.point = point;
-            lineDrawer.addPoint(point);
-        }
-
-        @Override
-        public void onMapLongTap(@NonNull Map map, @NonNull Point point) {
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,13 +58,9 @@ public class MainActivity extends AppCompatActivity {
         userLocationLayer.setHeadingEnabled(true);
 
         ButtonStart buttonStart = new ButtonStart(this,locationUpdater,R.id.button_start);
-        mapview.getMap().addInputListener(inputListener);
         lineDrawer = new LineDrawer(mapview);
 
-        mapObjects = mapview.getMap().getMapObjects().addCollection();
         MapSensor mapSensor = new MapSensor(this,relative,mapview,lineDrawer);
-        animationHandler = new Handler();
-
     }
 
     private void subscribeToLocationUpdate() {
