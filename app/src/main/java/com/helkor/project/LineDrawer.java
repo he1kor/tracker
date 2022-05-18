@@ -1,6 +1,7 @@
 package com.helkor.project;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 
@@ -30,9 +31,12 @@ public class LineDrawer {
             if (past_point != null) {
                 last_points.add(past_point);
             }
-            else {last_points.add(point);}
+            else {
+                last_points.add(point);
+            }
         Polyline last_line = new Polyline(last_points);
         polyline = mapObjects.addPolyline(last_line);
+        polyline.setStrokeColor(Color.BLACK);
     }
     public void addPoint(Point point){
         if (this.point != null) past_point = this.point;

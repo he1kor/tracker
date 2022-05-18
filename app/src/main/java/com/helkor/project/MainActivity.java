@@ -102,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
         mapObjects = mapview.getMap().getMapObjects().addCollection();
         MapSensor mapSensor = new MapSensor(this,relative,mapview,lineDrawer);
         animationHandler = new Handler();
-        createMapObjects();
-
 
     }
 
@@ -131,120 +129,5 @@ public class MainActivity extends AppCompatActivity {
         MapKitFactory.getInstance().onStart();
         mapview.onStart();
         subscribeToLocationUpdate();
-    }
-    static public void test(){
-        Toast toast = Toast.makeText(MainActivity.mapview.getContext(),
-                "test", Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
-    private MapObjectTapListener circleMapObjectTapListener = new MapObjectTapListener() {
-        @Override
-        public boolean onMapObjectTap(MapObject mapObject, Point point) {
-            if (mapObject instanceof CircleMapObject) {
-                CircleMapObject circle = (CircleMapObject)mapObject;
-
-                float randomRadius = 100.0f + 50.0f * new Random().nextFloat();
-
-                Circle curGeometry = circle.getGeometry();
-                Circle newGeometry = new Circle(curGeometry.getCenter(), randomRadius);
-                circle.setGeometry(newGeometry);
-
-                Object userData = circle.getUserData();
-                if (userData instanceof CircleMapObjectUserData) {
-                    CircleMapObjectUserData circleUserData = (CircleMapObjectUserData)userData;
-
-                    Toast toast = Toast.makeText(
-                            getApplicationContext(),
-                            "Circle with id " + circleUserData.id + " and description '"
-                                    + circleUserData.description + "' tapped",
-                            Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            }
-            return true;
-        }
-    };
-
-    private class CircleMapObjectUserData {
-        final int id;
-        final String description;
-
-        CircleMapObjectUserData(int id, String description) {
-            this.id = id;
-            this.description = description;
-        }
-    }
-    private void createMapObjects() {
-        final Point CAMERA_TARGET = new Point(59.952, 30.318);
-        final Point ANIMATED_RECTANGLE_CENTER = new Point(59.956, 30.313);
-        final Point TRIANGLE_CENTER = new Point(59.948, 30.313);
-        final Point POLYLINE_CENTER = CAMERA_TARGET;
-        final Point CIRCLE_CENTER = new Point(59.956, 30.323);
-        final Point DRAGGABLE_PLACEMARK_CENTER = new Point(59.948, 30.323);
-        final Point ANIMATED_PLACEMARK_CENTER = new Point(59.948, 30.318);
-        final double OBJECT_SIZE = 0.0015;
-        ArrayList<Point> polylinePoints = new ArrayList<>();
-        polylinePoints.add(new Point(
-                POLYLINE_CENTER.getLatitude() + OBJECT_SIZE,
-                POLYLINE_CENTER.getLongitude()- OBJECT_SIZE));
-        polylinePoints.add(new Point(
-                POLYLINE_CENTER.getLatitude() - OBJECT_SIZE,
-                POLYLINE_CENTER.getLongitude()- OBJECT_SIZE));
-        polylinePoints.add(new Point(
-                POLYLINE_CENTER.getLatitude(),
-                POLYLINE_CENTER.getLongitude() + OBJECT_SIZE));
-
-        PolylineMapObject polyline = mapObjects.addPolyline(new Polyline(polylinePoints));
-        polyline.setStrokeColor(Color.BLACK);
-        polyline.setZIndex(100.0f);
-
-        PlacemarkMapObject mark = mapObjects.addPlacemark(DRAGGABLE_PLACEMARK_CENTER);
-        mark.setOpacity(0.5f);
-        mark.setIcon(ImageProvider.fromResource(this, R.drawable.mark));
-        mark.setDraggable(true);
-
-        createPlacemarkMapObjectWithViewProvider();
-    }
-    private void createTappableCircle() {
-        final Point CIRCLE_CENTER = new Point(59.956, 30.323);
-        CircleMapObject circle = mapObjects.addCircle(
-                new Circle(CIRCLE_CENTER, 100), Color.GREEN, 2, Color.RED);
-        circle.setZIndex(100.0f);
-        circle.setUserData(new CircleMapObjectUserData(42, "Tappable circle"));
-
-        // Client code must retain strong reference to the listener.
-        circle.addTapListener(circleMapObjectTapListener);
-    }
-    private void createPlacemarkMapObjectWithViewProvider() {
-        final TextView textView = new TextView(this);
-        final int[] colors = new int[] { Color.RED, Color.GREEN, Color.BLACK };
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        textView.setLayoutParams(params);
-
-        textView.setTextColor(Color.RED);
-        textView.setText("Hello, World!");
-
-        final ViewProvider viewProvider = new ViewProvider(textView);
-        final PlacemarkMapObject viewPlacemark =
-                mapObjects.addPlacemark(new Point(59.946263, 30.315181), viewProvider);
-
-        final Random random = new Random();
-        final int delayToShowInitialText = 5000;  // milliseconds
-        final int delayToShowRandomText = 500; // milliseconds;
-
-        // Show initial text `delayToShowInitialText` milliseconds and then
-        // randomly change text in textView every `delayToShowRandomText` milliseconds
-        animationHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                final int randomInt = random.nextInt(1000);
-                textView.setText("Some text version " + randomInt);
-                textView.setTextColor(colors[randomInt % colors.length]);
-                viewProvider.snapshot();
-                viewPlacemark.setView(viewProvider);
-                animationHandler.postDelayed(this, delayToShowRandomText);
-            }
-        }, delayToShowInitialText);
     }
 }
