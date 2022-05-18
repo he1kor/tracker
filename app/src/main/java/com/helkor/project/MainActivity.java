@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     static public MapView mapview;
     static public TextView test_text;
     RelativeLayout drawable_relative;
-    ButtonStart start_button;
+    ButtonStart button_start;
     LineDrawer lineDrawer;
     MapSensor mapSensor;
 
@@ -46,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
 
         mapview.getMap().setScrollGesturesEnabled(true);
         mapview.getMap().setZoomGesturesEnabled(true);
-        mapview.getMap().setTiltGesturesEnabled(false);
+        mapview.getMap().setTiltGesturesEnabled(true);
         mapview.getMap().setMapType(MapType.NONE);
-        mapview.getMap().setModelsEnabled(false);
-        mapview.getMap().set2DMode(true);
+        mapview.getMap().setModelsEnabled(true);
+        mapview.getMap().set2DMode(false);
 
         locationManager = MapKitFactory.getInstance().createLocationManager();
 
@@ -61,21 +61,41 @@ public class MainActivity extends AppCompatActivity {
         userLocationLayer.setVisible(true);
         userLocationLayer.setHeadingEnabled(true);
 
-        start_button = new ButtonStart(this,locationUpdater,R.id.button_start, (short) 0);
-        holdButtonTrigger();
+        button_start = new ButtonStart(this,R.id.button_start);
+        this.holdButtonTrigger();
+
         lineDrawer = new LineDrawer(mapview);
         mapSensor = new MapSensor(this,drawable_relative,mapview,lineDrawer);
-        test_text.setText(Bool.toString(false));
+
+
     }
     public void holdButtonTrigger(){
-        switch (start_button.GetButtonVariant()){
-            case (0):
+        switch (button_start.getButtonVariant()) {
+            case (-1):
+            case (1):
+                button_start.setButtonVariant(0,this);
                 setCommonMode();
                 break;
-            case (1):
+            case (0):
+                button_start.setButtonVariant(1,this);
                 setDrawMode();
                 break;
         }
+    }
+    public void shortButtonTrigger(){
+        switch (button_start.getButtonVariant()) {
+            case (1):
+                lineDrawer.clear(mapview);
+
+            case (0):
+                if (locationUpdater.getMyLocation() == null) {
+                    locationUpdater.setExpectingLocation(true);
+                } else {
+                    locationUpdater.moveCamera(this, locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
+                }
+        }
+
+
     }
     private void setCommonMode(){
         drawable_relative.setVisibility(View.INVISIBLE);

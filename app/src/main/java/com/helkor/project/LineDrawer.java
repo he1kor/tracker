@@ -2,6 +2,8 @@ package com.helkor.project;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+
+import com.helkor.project.tech.Bool;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.geometry.Polyline;
 import com.yandex.mapkit.map.MapObjectCollection;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 
 public class LineDrawer {
     private PolylineMapObject polyline;
-    private ArrayList<Point> polylinePoints = new ArrayList<>();
+    private ArrayList<PolylineMapObject> polylineObjects = new ArrayList<>();
     private MapObjectCollection mapObjects;
     private Point point;
     private Point past_point;
@@ -32,18 +34,32 @@ public class LineDrawer {
                 last_points.add(point);
             }
         Polyline last_line = new Polyline(last_points);
-        polyline = mapObjects.addPolyline(last_line);
-        polyline.setStrokeColor(Color.BLACK);
+        polylineObjects.add(polyline = mapObjects.addPolyline(last_line));
+        polylineObjects.get(polylineObjects.size()-1).setStrokeColor(Color.BLACK);
+        int length = 15;
+        if (polylineObjects.size() > length) {
+            mapObjects.remove(polylineObjects.get(polylineObjects.size() - length));
+            polylineObjects.remove(polylineObjects.get(polylineObjects.size() - length));
+        }
+        debugPolylines();
     }
+    void debugPolylines(){
+        String text = "";
+        for (PolylineMapObject debug_polyline : polylineObjects) {
+            text = text + "1\n";
+        }
+        MainActivity.test_text.setText(text);
+    };
     public void addPoint(Point point){
         if (this.point != null) past_point = this.point;
         this.point = point;
-        polylinePoints.add(point);
         update();
     }
     public void clear(MapView mapview){
         mapObjects.clear();
+        polylineObjects.clear();
         mapObjects = mapview.getMap().getMapObjects().addCollection();
+        debugPolylines();
         point = null;
         past_point = null;
     }

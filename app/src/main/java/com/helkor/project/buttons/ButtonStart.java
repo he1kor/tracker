@@ -1,5 +1,7 @@
 package com.helkor.project.buttons;
 
+import static android.provider.Settings.Global.getString;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
@@ -12,30 +14,28 @@ import android.widget.Button;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.helkor.project.LocationUpdater;
 import com.helkor.project.MainActivity;
 import com.helkor.project.R;
 
 public class ButtonStart {
     private boolean isOnHold = false;
     private short button_variant;
-    private long time_after_hold = -100;
-    public ButtonStart(MainActivity activity, LocationUpdater locationUpdater, int button_start_id,short button_variant) {
-        this.button_variant = button_variant;
-        Button button_start = activity.findViewById(button_start_id);
-        set_view(activity,button_start);
-        Listener(activity,locationUpdater,button_start);
+    private long time_after_hold;
+    private Button button_start;
+
+    public ButtonStart(MainActivity activity, int button_start_id) {
+        button_variant = -1;
+        time_after_hold = -100;
+        button_start = activity.findViewById(button_start_id);
+        Listener(activity,button_start);
     }
-        @SuppressLint("ClickableViewAccessibility")
-        void Listener(MainActivity activity, LocationUpdater locationUpdater, Button button_start){
+
+    @SuppressLint("ClickableViewAccessibility")
+    void Listener(MainActivity activity, Button button_start){
 
         button_start.setOnClickListener(v -> {
             if (!isOnHold && System.currentTimeMillis() - time_after_hold > 15 ) {
-                if (locationUpdater.getMyLocation() == null) {
-                    locationUpdater.setExpectingLocation(true);
-                } else {
-                    locationUpdater.moveCamera(activity, locationUpdater.getMyLocation(), activity.COMFORTABLE_ZOOM_LEVEL);
-                }
+                activity.shortButtonTrigger();
             }
         });
 
@@ -45,37 +45,29 @@ public class ButtonStart {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(80, VibrationEffect.DEFAULT_AMPLITUDE));
             }
-            switch (button_variant) {
-                case (0):
-                    button_variant = 1;
-                    break;
-                case (1):
-                    button_variant = 0;
-                    break;
-            }
             activity.holdButtonTrigger();
-            set_view(activity,button_start);
             return false;
         });
 
-            button_start.setOnTouchListener((v, event) -> {
-                if (event.getAction() == MotionEvent.ACTION_DOWN ) {
-                    return false;
-                }
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (isOnHold) {
-                        time_after_hold = System.currentTimeMillis();
-                        isOnHold = false;
-                    }
-                    return false;
+        button_start.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN ) {
+                return false;
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (isOnHold) {
+                    time_after_hold = System.currentTimeMillis();
+                    isOnHold = false;
                 }
                 return false;
-            });
+            }
+            return false;
+        });
     }
-    private void set_view(MainActivity activity,Button button_start){
+    private void updateView(MainActivity activity){
         switch (button_variant) {
             case (0):
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_1));
+                setText(activity.getResources().getString(R.string.button_variant_1));
                 if (Build.VERSION.SDK_INT >= 21) {
                     Window window = activity.getWindow();
                     window.setStatusBarColor(ResourcesCompat.getColor(activity.getResources(), R.color.light_red, null));
@@ -83,6 +75,7 @@ public class ButtonStart {
                 break;
             case (1):
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_2));
+                setText(activity.getResources().getString(R.string.button_variant_2));
                 if (Build.VERSION.SDK_INT >= 21) {
                     Window window = activity.getWindow();
                     window.setStatusBarColor(ResourcesCompat.getColor(activity.getResources(), R.color.lilac, null));
@@ -90,8 +83,15 @@ public class ButtonStart {
                 break;
         }
     }
+    public void setButtonVariant(int button_variant,MainActivity activity){
+        this.button_variant = (short)button_variant;
+        updateView(activity);
+    }
+    private void setText(String text){
+        button_start.setText(text);
+    }
 
-    public short GetButtonVariant() {
+    public short getButtonVariant() {
         return button_variant;
     }
 }
