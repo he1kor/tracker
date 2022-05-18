@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.helkor.project.buttons.ButtonStart;
+import com.helkor.project.buttons.MapSensor;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.geometry.Circle;
@@ -56,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onMapTap(@NonNull Map map, @NonNull Point point) {
-            Toast toast = Toast.makeText(MainActivity.mapview.getContext(),
-                    "test", Toast.LENGTH_SHORT);
-            toast.show();
             this.point = point;
             lineDrawer.addPoint(point);
         }
@@ -76,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         MapKitFactory.initialize(this);
         setContentView(R.layout.activity_main);
 
-        mapview = (MapView) findViewById(R.id.map);
+        mapview = findViewById(R.id.map);
         test_text = findViewById(R.id.test_text);
         relative = findViewById(R.id.relative_layout_1);
 
@@ -102,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         lineDrawer = new LineDrawer(mapview);
 
         mapObjects = mapview.getMap().getMapObjects().addCollection();
+        MapSensor mapSensor = new MapSensor(this,relative,mapview,lineDrawer);
         animationHandler = new Handler();
         createMapObjects();
 

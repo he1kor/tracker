@@ -17,24 +17,25 @@ public class LineDrawer {
     private PolylineMapObject polyline;
     private ArrayList<Point> polylinePoints = new ArrayList<>();
     private MapObjectCollection mapObjects;
-    static public Handler handler;
     private Point point;
+    private Point past_point;
 
     @SuppressLint("HandlerLeak")
     public LineDrawer(MapView mapview) {
         mapObjects = mapview.getMap().getMapObjects().addCollection();
-        handler = new Handler() {   // создание хэндлера
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                MainActivity.test();
-            }
-        };
     }
     void update(){
-        polyline = mapObjects.addPolyline(new Polyline(polylinePoints));
+        ArrayList<Point> last_points = new ArrayList<Point>();
+            last_points.add(point);
+            if (past_point != null) {
+                last_points.add(past_point);
+            }
+            else {last_points.add(point);}
+        Polyline last_line = new Polyline(last_points);
+        polyline = mapObjects.addPolyline(last_line);
     }
     public void addPoint(Point point){
+        if (this.point != null) past_point = this.point;
         this.point = point;
         polylinePoints.add(point);
         update();
