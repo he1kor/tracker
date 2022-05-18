@@ -3,6 +3,7 @@ package com.helkor.project;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,13 +19,15 @@ import com.yandex.mapkit.user_location.UserLocationLayer;
 
 public class MainActivity extends AppCompatActivity {
 
-    public LineDrawer lineDrawer;
     public final String TAG = MainActivity.class.getSimpleName();
     public LocationUpdater locationUpdater;
     private LocationManager locationManager;
     static public MapView mapview;
-    public TextView test_text;
-    RelativeLayout relative;
+    static public TextView test_text;
+    RelativeLayout drawable_relative;
+    ButtonStart start_button;
+    LineDrawer lineDrawer;
+    MapSensor mapSensor;
 
     public final int COMFORTABLE_ZOOM_LEVEL = 16;
 
@@ -38,10 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
         mapview = findViewById(R.id.map);
         test_text = findViewById(R.id.test_text);
-        relative = findViewById(R.id.relative_layout_1);
+        drawable_relative = findViewById(R.id.relative_layout_1);
 
-        mapview.getMap().setScrollGesturesEnabled(false);
-        mapview.getMap().setZoomGesturesEnabled(false);
+        mapview.getMap().setScrollGesturesEnabled(true);
+        mapview.getMap().setZoomGesturesEnabled(true);
         mapview.getMap().setTiltGesturesEnabled(false);
         mapview.getMap().setMapType(MapType.NONE);
         mapview.getMap().setModelsEnabled(false);
@@ -57,12 +60,32 @@ public class MainActivity extends AppCompatActivity {
         userLocationLayer.setVisible(true);
         userLocationLayer.setHeadingEnabled(true);
 
-        ButtonStart buttonStart = new ButtonStart(this,locationUpdater,R.id.button_start);
+        start_button = new ButtonStart(this,locationUpdater,R.id.button_start, (short) 0);
+        holdButtonTrigger();
         lineDrawer = new LineDrawer(mapview);
-
-        MapSensor mapSensor = new MapSensor(this,relative,mapview,lineDrawer);
+        mapSensor = new MapSensor(this,drawable_relative,mapview,lineDrawer);
     }
+    public void holdButtonTrigger(){
+        switch (start_button.GetButtonVariant()){
+            case (0):
+                setCommonMode();
+                break;
+            case (1):
+                setDrawMode();
+                break;
+        }
+    }
+    public String boolToString (boolean b){
+        if (b) return "True";
+        else return "False";
+    }
+    private void setCommonMode(){
+        drawable_relative.setVisibility(View.INVISIBLE);
+    }
+    private void setDrawMode(){
+        drawable_relative.setVisibility(View.VISIBLE);
 
+    }
     private void subscribeToLocationUpdate() {
         if (locationManager != null && locationUpdater.getMyLocationListener() != null) {
             double DESIRED_ACCURACY = 0;

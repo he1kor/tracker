@@ -2,10 +2,6 @@ package com.helkor.project;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Message;
-
-import com.helkor.project.MainActivity;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.geometry.Polyline;
 import com.yandex.mapkit.map.MapObjectCollection;
@@ -25,6 +21,7 @@ public class LineDrawer {
     public LineDrawer(MapView mapview) {
         mapObjects = mapview.getMap().getMapObjects().addCollection();
     }
+
     void update(){
         ArrayList<Point> last_points = new ArrayList<Point>();
             last_points.add(point);
@@ -43,6 +40,12 @@ public class LineDrawer {
         this.point = point;
         polylinePoints.add(point);
         update();
+    }
+    public void clear(MapView mapview){
+        mapObjects.clear();
+        mapObjects = mapview.getMap().getMapObjects().addCollection();
+        point = null;
+        past_point = null;
     }
 
 }
