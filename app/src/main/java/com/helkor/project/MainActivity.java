@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.buttons.MapSensor;
+import com.helkor.project.tech.Bool;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.location.FilteringMode;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         holdButtonTrigger();
         lineDrawer = new LineDrawer(mapview);
         mapSensor = new MapSensor(this,drawable_relative,mapview,lineDrawer);
+        test_text.setText(Bool.toString(false));
     }
     public void holdButtonTrigger(){
         switch (start_button.GetButtonVariant()){
@@ -74,10 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 setDrawMode();
                 break;
         }
-    }
-    public String boolToString (boolean b){
-        if (b) return "True";
-        else return "False";
     }
     private void setCommonMode(){
         drawable_relative.setVisibility(View.INVISIBLE);
