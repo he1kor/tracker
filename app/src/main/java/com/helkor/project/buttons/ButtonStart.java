@@ -1,7 +1,5 @@
 package com.helkor.project.buttons;
 
-import static android.provider.Settings.Global.getString;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
@@ -22,20 +20,22 @@ public class ButtonStart {
     private short button_variant;
     private long time_after_hold;
     private Button button_start;
+    private MainActivity activity;
 
     public ButtonStart(MainActivity activity, int button_start_id) {
         button_variant = -1;
         time_after_hold = -100;
         button_start = activity.findViewById(button_start_id);
-        Listener(activity,button_start);
+        this.activity = activity;
+
+        Listener();
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    void Listener(MainActivity activity, Button button_start){
-
+    void Listener(){
         button_start.setOnClickListener(v -> {
             if (!isOnHold && System.currentTimeMillis() - time_after_hold > 15 ) {
-                activity.shortButtonTrigger();
+                activity.shortButtonTriggered();
             }
         });
 
@@ -45,7 +45,7 @@ public class ButtonStart {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(80, VibrationEffect.DEFAULT_AMPLITUDE));
             }
-            activity.holdButtonTrigger();
+            activity.holdButtonTriggered();
             return false;
         });
 
@@ -63,7 +63,7 @@ public class ButtonStart {
             return false;
         });
     }
-    private void updateView(MainActivity activity){
+    private void updateView(){
         switch (button_variant) {
             case (0):
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_1));
@@ -83,9 +83,9 @@ public class ButtonStart {
                 break;
         }
     }
-    public void setButtonVariant(int button_variant,MainActivity activity){
+    public void setButtonVariant(int button_variant){
         this.button_variant = (short)button_variant;
-        updateView(activity);
+        updateView();
     }
     private void setText(String text){
         button_start.setText(text);

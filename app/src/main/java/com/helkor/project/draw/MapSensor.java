@@ -1,12 +1,9 @@
-package com.helkor.project.buttons;
+package com.helkor.project.draw;
 
 import android.annotation.SuppressLint;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
-import com.helkor.project.LineDrawer;
-import com.helkor.project.MainActivity;
 import com.yandex.mapkit.ScreenPoint;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.map.CameraPosition;
@@ -15,15 +12,23 @@ import com.yandex.mapkit.mapview.MapView;
 public class MapSensor{
     private float x;
     private float y;
+
+    private View drawable_relative;
+    private MapView mapView;
+    private LineDrawer lineDrawer;
+
     private Point point = new Point(0,0);
     CameraPosition currentCameraPosition;
 
-    public MapSensor(MainActivity activity, View view, MapView mapView, LineDrawer lineDrawer) {
-        Listener(activity, view, mapView, lineDrawer);
+    public MapSensor(View drawable_relative, MapView mapView, LineDrawer lineDrawer) {
+        this.drawable_relative = drawable_relative;
+        this.mapView = mapView;
+        this.lineDrawer = lineDrawer;
+        Listener();
     }
     @SuppressLint("ClickableViewAccessibility")
-    void Listener(MainActivity activity, View view, MapView mapView, LineDrawer lineDrawer){
-        view.setOnTouchListener(new View.OnTouchListener() {
+    void Listener(){
+        drawable_relative.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 x = event.getX();

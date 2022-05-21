@@ -8,8 +8,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.helkor.project.buttons.ButtonStart;
-import com.helkor.project.buttons.MapSensor;
-import com.helkor.project.tech.Bool;
+import com.helkor.project.draw.LineDrawer;
+import com.helkor.project.draw.MapSensor;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.location.FilteringMode;
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     LineDrawer lineDrawer;
     MapSensor mapSensor;
 
-    public final int COMFORTABLE_ZOOM_LEVEL = 16;
+    public final int COMFORTABLE_ZOOM_LEVEL = 17;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,27 +62,27 @@ public class MainActivity extends AppCompatActivity {
         userLocationLayer.setHeadingEnabled(true);
 
         button_start = new ButtonStart(this,R.id.button_start);
-        this.holdButtonTrigger();
+        this.holdButtonTriggered();
 
-        lineDrawer = new LineDrawer(mapview);
-        mapSensor = new MapSensor(this,drawable_relative,mapview,lineDrawer);
+        lineDrawer = new LineDrawer(mapview,this);
+        mapSensor = new MapSensor(drawable_relative,mapview,lineDrawer);
 
 
     }
-    public void holdButtonTrigger(){
+    public void holdButtonTriggered(){
         switch (button_start.getButtonVariant()) {
             case (-1):
             case (1):
-                button_start.setButtonVariant(0,this);
+                button_start.setButtonVariant(0);
                 setCommonMode();
                 break;
             case (0):
-                button_start.setButtonVariant(1,this);
+                button_start.setButtonVariant(1);
                 setDrawMode();
                 break;
         }
     }
-    public void shortButtonTrigger(){
+    public void shortButtonTriggered(){
         switch (button_start.getButtonVariant()) {
             case (1):
                 lineDrawer.clear(mapview);
