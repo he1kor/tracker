@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.draw.LineDrawer;
@@ -24,11 +23,11 @@ public class MainActivity extends AppCompatActivity {
     public final String TAG = MainActivity.class.getSimpleName();
     public LocationUpdater locationUpdater;
     private LocationManager locationManager;
-    static public MapView mapview;
+    static public MapView map_view;
     static public TextView test_text;
     RelativeLayout drawable_relative;
     ButtonStart button_start;
-    LineDrawer lineDrawer;
+    LineDrawer line_drawer;
     MapSensor mapSensor;
 
     public final int COMFORTABLE_ZOOM_LEVEL = 16;
@@ -41,73 +40,80 @@ public class MainActivity extends AppCompatActivity {
         MapKitFactory.initialize(this);
         setContentView(R.layout.activity_main);
 
-        mapview = findViewById(R.id.map);
+        map_view = findViewById(R.id.map);
         test_text = findViewById(R.id.test_text);
         drawable_relative = findViewById(R.id.relative_layout_1);
 
-        mapview.getMap().setScrollGesturesEnabled(true);
-        mapview.getMap().setZoomGesturesEnabled(true);
-        mapview.getMap().setTiltGesturesEnabled(true);
-        mapview.getMap().setMapType(MapType.NONE);
-        mapview.getMap().setModelsEnabled(true);
-        mapview.getMap().set2DMode(false);
+        map_view.getMap().setScrollGesturesEnabled(true);
+        map_view.getMap().setZoomGesturesEnabled(true);
+        map_view.getMap().setTiltGesturesEnabled(true);
+        map_view.getMap().setMapType(MapType.NONE);
+        map_view.getMap().setModelsEnabled(true);
+        map_view.getMap().set2DMode(false);
 
         locationManager = MapKitFactory.getInstance().createLocationManager();
 
-        locationUpdater = new LocationUpdater(this,COMFORTABLE_ZOOM_LEVEL);
-
         MapKit mapKit = MapKitFactory.getInstance();
 
-        UserLocationLayer userLocationLayer = mapKit.createUserLocationLayer(mapview.getMapWindow());
+        UserLocationLayer userLocationLayer = mapKit.createUserLocationLayer(map_view.getMapWindow());
         userLocationLayer.setVisible(true);
         userLocationLayer.setHeadingEnabled(true);
 
         button_start = new ButtonStart(this,R.id.button_start);
+
+        line_drawer = new LineDrawer(map_view,this);
+        locationUpdater = new LocationUpdater(this,map_view,COMFORTABLE_ZOOM_LEVEL,line_drawer);
+        mapSensor = new MapSensor(drawable_relative,map_view,line_drawer);
+
         this.holdButtonTriggered();
-
-        lineDrawer = new LineDrawer(mapview,this);
-        mapSensor = new MapSensor(drawable_relative,mapview,lineDrawer);
-
-
     }
+
+
     public void holdButtonTriggered(){
         switch (button_start.getButtonVariant()) {
             case (-1):
             case (1):
+                //From draw mode switch to common mode:
                 button_start.setButtonVariant(0);
                 setCommonMode();
+                locationUpdater.setDrawable(true);
+                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1);
                 break;
             case (0):
+                //From common mode switch to draw mode:
                 button_start.setButtonVariant(1);
                 setDrawMode();
+                locationUpdater.setDrawable(false);
+                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
                 break;
         }
     }
     public void shortButtonTriggered(){
         switch (button_start.getButtonVariant()) {
             case (1):
-                lineDrawer.clear(mapview);
-                locationUpdater.moveCamera(this, locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
+                //In draw mode:
+                line_drawer.clear(map_view);
+                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
                 break;
             case (0):
-
+                //In common mode:
                 if (locationUpdater.getMyLocation() == null) {
                     locationUpdater.setExpectingLocation(true);
                 } else {
-                    locationUpdater.moveCamera(this, locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
+                    locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1);
                 }
                 break;
         }
-
-
     }
+
     private void setCommonMode(){
         drawable_relative.setVisibility(View.INVISIBLE);
     }
     private void setDrawMode(){
         drawable_relative.setVisibility(View.VISIBLE);
-
     }
+
+
     private void subscribeToLocationUpdate() {
         if (locationManager != null && locationUpdater.getMyLocationListener() != null) {
             double DESIRED_ACCURACY = 0;
@@ -117,20 +123,18 @@ public class MainActivity extends AppCompatActivity {
             locationManager.subscribeForLocationUpdates(DESIRED_ACCURACY, MINIMAL_TIME, MINIMAL_DISTANCE, USE_IN_BACKGROUND, FilteringMode.OFF, locationUpdater.getMyLocationListener());
         }
     }
-
     @Override
     protected void onStop() {
         super.onStop();
-        mapview.onStop();
+        map_view.onStop();
         MapKitFactory.getInstance().onStop();
 
     }
-
     @Override
     protected void onStart() {
         super.onStart();
         MapKitFactory.getInstance().onStart();
-        mapview.onStart();
+        map_view.onStart();
         subscribeToLocationUpdate();
     }
 }

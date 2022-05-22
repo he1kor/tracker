@@ -61,7 +61,7 @@ public class LineDrawer {
         //for (ArrayList<Point> points_pair : points) {
         //    text = text + "\n" + points_pair.get(0).getLongitude() + " " + points_pair.get(0).getLatitude() + " | " + points_pair.get(1).getLongitude() + " " + points_pair.get(1).getLatitude();
         //}
-        if (polylineObjects != null && distances.size() > 0) text = "PolylineOBjects size: " + polylineObjects.size() + "\nPath: " + path + "\nFirst Distance: " + distances.get(0) + "\nLast Distance: " + distances.get(polylineObjects.size()-1);
+        //if (polylineObjects != null && distances.size() > 0) text = "PolylineOBjects size: " + polylineObjects.size() + "\nPath: " + path + "\nFirst Distance: " + distances.get(0) + "\nLast Distance: " + distances.get(polylineObjects.size()-1);
         MainActivity.test_text.setText(text);
     };
     private void colorize(){
