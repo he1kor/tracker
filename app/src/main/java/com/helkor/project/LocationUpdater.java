@@ -5,7 +5,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.helkor.project.draw.LineDrawer;
+import com.helkor.project.tech.map.ShortLocation;
+import com.helkor.project.tech.map.ShortLocationArray;
 import com.yandex.mapkit.Animation;
+import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.location.Location;
 import com.yandex.mapkit.location.LocationListener;
@@ -16,6 +19,9 @@ import com.yandex.mapkit.map.CameraUpdateReason;
 import com.yandex.mapkit.map.Map;
 import com.yandex.mapkit.map.MapType;
 import com.yandex.mapkit.mapview.MapView;
+import com.yandex.runtime.sensors.internal.LastKnownLocation;
+
+import java.util.ArrayList;
 
 public class LocationUpdater {
     private CameraListener myCameraListener;
@@ -24,6 +30,8 @@ public class LocationUpdater {
     private MapView map_view;
     private Map map;
     private LineDrawer line_drawer;
+    private ShortLocationArray last_locations;
+    private final int MAX_CHECK_LINE = 3;
 
     private boolean is_drawable = false;
     private final int COMFORTABLE_ZOOM_LEVEL;
@@ -38,28 +46,32 @@ public class LocationUpdater {
         this.map = map_view.getMap();
         this.COMFORTABLE_ZOOM_LEVEL = COMFORTABLE_ZOOM_LEVEL;
         this.line_drawer = line_drawer;
+        last_locations = new ShortLocationArray(MAX_CHECK_LINE);
         Listener();
     }
+    private void updateLocation(Location location){
+        last_locations.add(location);
+    }
 
-    void Listener() {
+    private void Listener() {
         myLocationListener = new LocationListener() {
 
             @Override
             public void onLocationUpdated(@NonNull Location location) {
-                //moveCamera(activity, location.getPosition(), COMFORTABLE_ZOOM_LEVEL);
+                last_locations.add(location);
+                if (is_drawable && last_locations.size() == MAX_CHECK_LINE) addPoint();
+
                 if (myLocation == null) {
                     map.setMapType(MapType.VECTOR_MAP);
                     moveCamera(map_view,location.getPosition(), COMFORTABLE_ZOOM_LEVEL);
                 }
-                if (is_drawable && !line_drawer.isCounting()) line_drawer.addPoint(location.getPosition());
-
-                myLocation = location.getPosition();
                 if (expecting_location) {
                     moveCamera(map_view,location.getPosition(), expecting_zoom);
                     setExpectingLocation(false);
                 }
-
-                Log.w(activity.TAG, "my location - " + myLocation.getLatitude() + "," + myLocation.getLongitude());
+                myLocation = location.getPosition();
+                //MainActivity.test_text.setText("Size: " + last_locations.size() + "\nMaxDistance: " + last_locations.getMaxDistance());
+                Log.w(activity.TAG, "my location - " + last_locations.getLastLatitude() + "," + last_locations.getLastLongitude());
             }
 
             @Override
@@ -76,7 +88,13 @@ public class LocationUpdater {
             }
         };
     }
+    private void addPoint(){
 
+        double distance = last_locations.getMaxDistance();
+        double accuracy = last_locations.getLastAccuracy();
+
+        if (!line_drawer.isCounting() && distance + 10 > accuracy) line_drawer.addPoint(last_locations.getLastPoint());
+    }
     public void moveCamera(MapView map_view,Point point, float zoom) {
         if (point != null) {
             map.move(

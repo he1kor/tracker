@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //TODO: decide the final interface for different modes (add another button?)
     public void holdButtonTriggered(){
         switch (button_start.getButtonVariant()) {
             case (-1):
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 //From draw mode switch to common mode:
                 button_start.setButtonVariant(0);
                 setCommonMode();
+                line_drawer.setMinRealStep(20);
                 locationUpdater.setDrawable(true);
                 locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1);
                 break;
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 //From common mode switch to draw mode:
                 button_start.setButtonVariant(1);
                 setDrawMode();
+                line_drawer.setMinRealStep(5);
                 locationUpdater.setDrawable(false);
                 locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
                 break;
