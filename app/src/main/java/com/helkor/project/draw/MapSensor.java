@@ -35,7 +35,7 @@ public class MapSensor{
                 y = event.getY();
                 point = mapView.screenToWorld(new ScreenPoint(x,y));
                 currentCameraPosition = mapView.getMap().getCameraPosition();
-                lineDrawer.addPoint(point);;
+                if (!lineDrawer.isCounting()) lineDrawer.addPoint(point);;
                 return true;
             }
         });

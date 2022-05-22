@@ -23,9 +23,14 @@ public class LineDrawer {
     private ArrayList<ArrayList<Point>> points = new ArrayList<>();
     ArrayList<Double> distances = new ArrayList<Double>();
     MainActivity activity;
-    final int MAX_POINTS = 100;
-    double distance;
-    double path = 0;
+    private final int MAX_POINTS = 300;
+    private final int MAX_DIVISION_POINTS = 20;
+    private final double MIN_DIVISION_STEP = 0.0002;
+    private final double MIN_REAL_STEP = 0.0001;
+    private final double MIN_UNSEEN_STEP = 0.00000001;
+    private double distance;
+    private double path = 0;
+    private boolean is_counting = false;
 
     @SuppressLint("HandlerLeak")
     public LineDrawer(MapView mapview,MainActivity activity) {
@@ -49,18 +54,18 @@ public class LineDrawer {
             path -= distances.get(0);
             distances.remove(0);
         }
-
-        colorize();
         //debugPolylines();
     }
     private void debugPolylines(){
         String text = "";
-        for (ArrayList<Point> points_pair : points) {
-            text = text + "\n" + points_pair.get(0).getLongitude() + " " + points_pair.get(0).getLatitude() + " | " + points_pair.get(1).getLongitude() + " " + points_pair.get(1).getLatitude();
-        }
+        //for (ArrayList<Point> points_pair : points) {
+        //    text = text + "\n" + points_pair.get(0).getLongitude() + " " + points_pair.get(0).getLatitude() + " | " + points_pair.get(1).getLongitude() + " " + points_pair.get(1).getLatitude();
+        //}
+        if (polylineObjects != null && distances.size() > 0) text = "PolylineOBjects size: " + polylineObjects.size() + "\nPath: " + path + "\nFirst Distance: " + distances.get(0) + "\nLast Distance: " + distances.get(polylineObjects.size()-1);
         MainActivity.test_text.setText(text);
     };
     private void colorize(){
+        debugPolylines();
         double current_path = 0;
         for (int i = 0; i < polylineObjects.size(); i++) {
             current_path += distances.get(i);
@@ -69,6 +74,7 @@ public class LineDrawer {
         }
     }
     public void addPoint(Point point){
+        is_counting = true;
         if (this.point != null) {
             distance = getDistance(point,this.point);
             double first_longitude = this.point.getLongitude();
@@ -80,35 +86,34 @@ public class LineDrawer {
             double longitude_signed_distance = second_longitude - first_longitude;
             double latitude_signed_distance = second_latitude - first_latitude;
 
-            double iterations = distance / 0.0002;
+            double iterations = distance / MIN_DIVISION_STEP;
 
             double longitude_step = longitude_signed_distance / iterations;
             double latitude_step = latitude_signed_distance / iterations;
             if (iterations > 1) {
 
-                for (int i = 0; i < Math.floor(iterations) && i < 10; i++) {
-                    //if (i == Math.ceil(iterations) - 1) {
-                    //    debugPolylines();
-                    //    longitude_step = (Math.ceil(iterations)-iterations) * longitude_step;
-                    //    latitude_step = (Math.ceil(iterations)-iterations) * latitude_step;
-                    //}
+                for (int i = 0; i < Math.floor(iterations) && i < MAX_DIVISION_POINTS; i++) {
                     past_point = this.point;
                     this.point = new Point(past_point.getLatitude() + latitude_step, past_point.getLongitude() + longitude_step);
+                    distance = getDistance(this.point,past_point);
                     update();
                 }
 
             }
-            else if (distance > 0.00002) {
+            else if (distance > MIN_REAL_STEP) {
                 past_point = this.point;
                 this.point = point;
                 update();
             }
         }
         else{
-            past_point = new Point(point.getLatitude() + 0.00000001, point.getLongitude() + 0.00000001);
+            past_point = new Point(point.getLatitude() + MIN_UNSEEN_STEP, point.getLongitude() + MIN_UNSEEN_STEP);
             this.point = point;
+            distance = getDistance(past_point,point);
             update();
         }
+        colorize();
+        is_counting = false;
     }
     private double getDistance(Point first_point, Point second_point){
         double first_longitude = first_point.getLongitude();
@@ -134,5 +139,7 @@ public class LineDrawer {
         point = null;
         past_point = null;
     }
-
+    public boolean isCounting(){
+        return is_counting;
+    }
 }

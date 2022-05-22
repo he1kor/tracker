@@ -30,7 +30,7 @@ public class LocationUpdater {
 
             @Override
             public void onLocationUpdated(@NonNull Location location) {
-                moveCamera(activity, location.getPosition(), COMFORTABLE_ZOOM_LEVEL);
+                //moveCamera(activity, location.getPosition(), COMFORTABLE_ZOOM_LEVEL);
                 if (myLocation == null) {
                     activity.mapview.getMap().setMapType(MapType.VECTOR_MAP);
                     moveCamera(activity, location.getPosition(), COMFORTABLE_ZOOM_LEVEL);
@@ -54,7 +54,7 @@ public class LocationUpdater {
         myCameraListener = new CameraListener() {
             @Override
             public void onCameraPositionChanged(@NonNull Map map, @NonNull CameraPosition cameraPosition, @NonNull CameraUpdateReason cameraUpdateReason, boolean b) {
-                moveCamera(activity, myLocation, COMFORTABLE_ZOOM_LEVEL);
+                //moveCamera(activity, myLocation, COMFORTABLE_ZOOM_LEVEL);
             }
         };
     }

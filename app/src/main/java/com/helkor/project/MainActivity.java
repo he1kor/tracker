@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.draw.LineDrawer;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     LineDrawer lineDrawer;
     MapSensor mapSensor;
 
-    public final int COMFORTABLE_ZOOM_LEVEL = 17;
+    public final int COMFORTABLE_ZOOM_LEVEL = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,13 +87,16 @@ public class MainActivity extends AppCompatActivity {
         switch (button_start.getButtonVariant()) {
             case (1):
                 lineDrawer.clear(mapview);
-
+                locationUpdater.moveCamera(this, locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
+                break;
             case (0):
+
                 if (locationUpdater.getMyLocation() == null) {
                     locationUpdater.setExpectingLocation(true);
                 } else {
                     locationUpdater.moveCamera(this, locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
                 }
+                break;
         }
 
 
