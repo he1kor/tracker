@@ -6,7 +6,10 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 import androidx.core.content.ContextCompat;
@@ -26,6 +29,7 @@ public class ButtonStart {
         button_variant = -1;
         time_after_hold = -100;
         button_start = activity.findViewById(button_start_id);
+        button_start.setVisibility(View.INVISIBLE);
         this.activity = activity;
 
         Listener();
@@ -63,7 +67,7 @@ public class ButtonStart {
             return false;
         });
     }
-    private void updateView(){
+    public void updateView(){
         switch (button_variant) {
             case (0):
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_1));
@@ -71,6 +75,7 @@ public class ButtonStart {
                 if (Build.VERSION.SDK_INT >= 21) {
                     Window window = activity.getWindow();
                     window.setStatusBarColor(ResourcesCompat.getColor(activity.getResources(), R.color.light_red, null));
+
                 }
                 break;
             case (1):
@@ -82,6 +87,11 @@ public class ButtonStart {
                 }
                 break;
         }
+    }
+    public void playAnimation(){
+        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.button_float);
+        button_start.setVisibility(View.VISIBLE);
+        button_start.startAnimation(animation);
     }
     public void setButtonVariant(int button_variant){
         this.button_variant = (short)button_variant;

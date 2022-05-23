@@ -1,15 +1,23 @@
 package com.helkor.project;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
+import android.animation.ValueAnimator;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.draw.LineDrawer;
 import com.helkor.project.draw.MapSensor;
+import com.helkor.project.graphics.Bar;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.location.FilteringMode;
@@ -26,9 +34,11 @@ public class MainActivity extends AppCompatActivity {
     static public MapView map_view;
     static public TextView test_text;
     RelativeLayout drawable_relative;
+    RelativeLayout background;
     ButtonStart button_start;
     LineDrawer line_drawer;
     MapSensor mapSensor;
+    boolean is_clicked_once = false;
 
     public final int COMFORTABLE_ZOOM_LEVEL = 16;
 
@@ -43,11 +53,12 @@ public class MainActivity extends AppCompatActivity {
         map_view = findViewById(R.id.map);
         test_text = findViewById(R.id.test_text);
         drawable_relative = findViewById(R.id.relative_layout_1);
+        background = findViewById(R.id.background);
 
         map_view.getMap().setScrollGesturesEnabled(true);
         map_view.getMap().setZoomGesturesEnabled(true);
         map_view.getMap().setTiltGesturesEnabled(true);
-        map_view.getMap().setMapType(MapType.NONE);
+        map_view.getMap().setMapType(MapType.VECTOR_MAP);
         map_view.getMap().setModelsEnabled(true);
         map_view.getMap().set2DMode(false);
 
@@ -59,27 +70,46 @@ public class MainActivity extends AppCompatActivity {
         userLocationLayer.setVisible(true);
         userLocationLayer.setHeadingEnabled(true);
 
-        button_start = new ButtonStart(this,R.id.button_start);
 
         line_drawer = new LineDrawer(map_view,this);
         locationUpdater = new LocationUpdater(this,map_view,COMFORTABLE_ZOOM_LEVEL,line_drawer);
         mapSensor = new MapSensor(drawable_relative,map_view,line_drawer);
 
+
+    }
+    void initButton(){
+        playBackgroundAnim(background);
+        Bar.setActivity(this);
+        Bar.animateColor(this.getColor(R.color.black),this.getColor(R.color.light_red),2000);
+        map_view.setVisibility(View.VISIBLE);
+        button_start = new ButtonStart(this,R.id.button_start);
         this.holdButtonTriggered();
     }
-
+    void playBackgroundAnim(RelativeLayout background){
+        Animation animation = AnimationUtils.loadAnimation(this,R.anim.background_vanishing);
+        background.startAnimation(animation);
+    }
 
     //TODO: decide the final interface for different modes (add another button?)
     public void holdButtonTriggered(){
         switch (button_start.getButtonVariant()) {
             case (-1):
+                //From starting mode switch to common mode:
+                button_start.playAnimation();
+                button_start.setButtonVariant(0);
+                setCommonMode();
+                line_drawer.setMinRealStep(20);
+                locationUpdater.setDrawable(true);
+                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,3);
+                break;
             case (1):
                 //From draw mode switch to common mode:
                 button_start.setButtonVariant(0);
                 setCommonMode();
                 line_drawer.setMinRealStep(20);
                 locationUpdater.setDrawable(true);
-                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1);
+                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
+                Bar.stop();
                 break;
             case (0):
                 //From common mode switch to draw mode:
@@ -87,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
                 setDrawMode();
                 line_drawer.setMinRealStep(5);
                 locationUpdater.setDrawable(false);
-                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
+                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL,1);
+                Bar.stop();
                 break;
         }
     }
@@ -96,14 +127,14 @@ public class MainActivity extends AppCompatActivity {
             case (1):
                 //In draw mode:
                 line_drawer.clear(map_view);
-                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL);
+                locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL,1);
                 break;
             case (0):
                 //In common mode:
                 if (locationUpdater.getMyLocation() == null) {
                     locationUpdater.setExpectingLocation(true);
                 } else {
-                    locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1);
+                    locationUpdater.moveCamera(map_view,locationUpdater.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
                 }
                 break;
         }

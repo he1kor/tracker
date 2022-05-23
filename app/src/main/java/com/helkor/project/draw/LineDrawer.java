@@ -65,7 +65,7 @@ public class LineDrawer {
         //}
         //if (polylineObjects != null && distances.size() > 0) text = "PolylineOBjects size: " + polylineObjects.size() + "\nPath: " + path + "\nFirst Distance: " + distances.get(0) + "\nLast Distance: " + distances.get(polylineObjects.size()-1);
         //MainActivity.test_text.setText(text);
-    };
+    }
     private void colorize(){
         debugPolylines();
         double current_path = 0;
