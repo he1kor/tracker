@@ -17,6 +17,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.helkor.project.MainActivity;
 import com.helkor.project.R;
+import com.helkor.project.graphics.Bar;
 
 public class ButtonStart {
     private boolean isOnHold = false;
@@ -39,7 +40,7 @@ public class ButtonStart {
     void Listener(){
         button_start.setOnClickListener(v -> {
             if (!isOnHold && System.currentTimeMillis() - time_after_hold > 15 ) {
-                activity.shortButtonTriggered();
+                activity.shortMainButtonTriggered();
             }
         });
 
@@ -49,7 +50,7 @@ public class ButtonStart {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(80, VibrationEffect.DEFAULT_AMPLITUDE));
             }
-            activity.holdButtonTriggered();
+            activity.holdMainButtonTriggered();
             return false;
         });
 
@@ -72,23 +73,16 @@ public class ButtonStart {
             case (0):
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_1));
                 setText(activity.getResources().getString(R.string.button_variant_1));
-                if (Build.VERSION.SDK_INT >= 21) {
-                    Window window = activity.getWindow();
-                    window.setStatusBarColor(ResourcesCompat.getColor(activity.getResources(), R.color.light_red, null));
-
-                }
+                Bar.setColor(R.color.light_red);
                 break;
             case (1):
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_2));
                 setText(activity.getResources().getString(R.string.button_variant_2));
-                if (Build.VERSION.SDK_INT >= 21) {
-                    Window window = activity.getWindow();
-                    window.setStatusBarColor(ResourcesCompat.getColor(activity.getResources(), R.color.lilac, null));
-                }
+                Bar.setColor(R.color.lilac);
                 break;
         }
     }
-    public void playAnimation(){
+    public void show(){
         Animation animation = AnimationUtils.loadAnimation(activity,R.anim.button_float);
         button_start.setVisibility(View.VISIBLE);
         button_start.startAnimation(animation);

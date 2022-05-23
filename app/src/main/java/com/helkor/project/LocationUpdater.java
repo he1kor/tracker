@@ -120,7 +120,7 @@ public class LocationUpdater {
                 new Map.CameraCallback() {
                     @Override
                     public void onMoveFinished(boolean b) {
-                        activity.initButton();
+                        activity.initMainButton();
                     }
                 }
         );
