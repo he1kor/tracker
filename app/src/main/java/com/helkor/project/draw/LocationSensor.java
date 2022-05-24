@@ -2,6 +2,7 @@ package com.helkor.project.draw;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -39,6 +40,7 @@ public class LocationSensor{
     private boolean isMapLoaded;
 
     private boolean is_drawable = false;
+    private boolean is_walkable = false;
     private final float COMFORTABLE_ZOOM_LEVEL;
 
     private boolean expecting_location;
@@ -72,6 +74,9 @@ public class LocationSensor{
             @Override
             public void onLocationUpdated(@NonNull Location location) {
                 last_locations.add(location);
+                if (is_walkable) {
+                    line_drawer.checkForTravelled(location.getPosition(),location.getAccuracy());
+                }
                 if (is_drawable && last_locations.size() == MAX_CHECK_LINE) addPoint();
 
                 if (myLocation == null) {
@@ -159,11 +164,19 @@ public class LocationSensor{
     public Point getMyLocation() {
         return myLocation;
     }
+
     public boolean isDrawable() {
         return is_drawable;
     }
     public void setDrawable(boolean is_drawable) {
         this.is_drawable = is_drawable;
+    }
+
+    public boolean isWalkable() {
+        return is_walkable;
+    }
+    public void setWalkable(boolean is_walkable) {
+        this.is_walkable = is_walkable;
     }
 
 }

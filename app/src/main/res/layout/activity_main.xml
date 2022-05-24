@@ -46,7 +46,9 @@
         android:layout_marginBottom="256dp"
         android:background="@drawable/circle_variant_1"
         android:padding="15dp"
-        android:textSize="34sp"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textSize="28sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,7 +67,8 @@
         android:padding="15dp"
         android:scaleType="centerInside"
         android:src="@drawable/icon_gps_mode"
-        android:textSize="34sp"
+        android:textAllCaps="false"
+        android:textSize="48sp"
         android:translationZ="95dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -73,6 +76,7 @@
         app:layout_constraintStart_toEndOf="@+id/button_start"
         app:tint="#FFFFFF"
         tools:visibility="visible" />
+
     <RelativeLayout
         android:id="@+id/relative_layout_1"
         android:layout_width="match_parent"

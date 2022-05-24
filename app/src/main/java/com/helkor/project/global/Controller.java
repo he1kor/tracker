@@ -1,6 +1,7 @@
 package com.helkor.project.global;
 
 import android.app.Activity;
+import android.widget.Toast;
 
 import com.helkor.project.R;
 import com.helkor.project.buttons.ButtonStart;
@@ -13,9 +14,6 @@ import com.helkor.project.graphics.Bar;
 import com.helkor.project.map.MapState;
 import com.helkor.project.map.NavigatorState;
 import com.yandex.mapkit.MapKit;
-import com.yandex.mapkit.MapKitFactory;
-
-import java.util.Map;
 
 public class Controller {
 
@@ -50,8 +48,10 @@ public class Controller {
         line_drawer = new LineDrawer(this,map_state);
         location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer);
         map_sensor = new MapSensor(this,R.id.relative_layout_1,map_state,line_drawer);
-
     }
+
+
+
 
     public void initButtons (){
         map_state.show();
@@ -62,47 +62,65 @@ public class Controller {
         button_start = new ButtonStart(this,R.id.button_start);
         button_switch_draw = new ButtonSwitchDraw(this,R.id.button_switch_draw);
 
-        //user_location_view.getArrow().setIcon(ImageProvider.fromResource(
-        //        this, R.drawable.navigation_arrow));
         button_start.show();
         button_start.setButtonVariant(0);
         setCommonMode();
         location_sensor.moveCamera(location_sensor.getMyLocation(), COMFORTABLE_ZOOM_LEVEL+1,3);
     }
 
+
+
+
+    public void updatePathValue(double path){
+        button_start.updateView(path);
+    }
+    public void updatePathValue(double path,double travelled_path){
+        button_start.updateView(path,travelled_path);
+    }
+
+
     public void holdMainButtonTriggered(){
         switch (button_start.getButtonVariant()) {
             case (1):
-                //From draw mode switch to common mode:
+                //From draw mode switch to main mode:
+                button_switch_draw.hide();
                 button_start.setButtonVariant(0);
                 break;
             case (0):
-                //From common mode switch to draw mode:
+                //From main mode switch to draw mode:
                 button_start.setButtonVariant(1);
+                break;
+            case (2):
+                //From walking mode switch to main mode:
+                button_start.setButtonVariant(0);
+                break;
+            case (3):
+                //From paused mode switch to main mode:
+                button_start.setButtonVariant(0);
                 break;
         }
         holdMainButtonCheckout();
     }
     public void holdMainButtonCheckout(){
+        Bar.stop();
         switch (button_start.getButtonVariant()) {
             case (1):
                 setDrawMode();
                 location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL,1);
-                Bar.stop();
                 break;
             case (0):
                 setCommonMode();
                 location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
-                Bar.stop();
                 break;
         }
     }
+
+
     public void shortMainButtonTriggered(){
         switch (button_start.getButtonVariant()) {
             case (1):
                 //In draw mode:
                 line_drawer.clear();
-                location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL,1);
                 break;
             case (0):
                 //In common mode:
@@ -111,6 +129,18 @@ public class Controller {
                 } else {
                     location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
                 }
+                setWalkingMode();
+                button_start.setButtonVariant(2);
+                break;
+            case (2):
+                //In walking mode:
+                setPausedMode();
+                button_start.setButtonVariant(3);
+                break;
+            case (3):
+                //In paused mode:
+                setWalkingMode();
+                button_start.setButtonVariant(2);
                 break;
         }
     }
@@ -124,6 +154,7 @@ public class Controller {
                 //From navigator mode switch to draw mode:
                 button_switch_draw.setButtonVariant(1);
                 break;
+
         }
         shortSwitchButtonCheckout();
     }
@@ -138,10 +169,16 @@ public class Controller {
         }
     }
 
+
+
+
+
+
     private void setCommonMode(){
         map_sensor.hide();
         location_sensor.setDrawable(false);
-        button_switch_draw.hide();
+        location_sensor.setWalkable(false);
+        line_drawer.resetWalkedPath();
 
     }
     private void setDrawMode(){
@@ -150,6 +187,16 @@ public class Controller {
         shortSwitchButtonCheckout();
 
     }
+    private void setWalkingMode() {
+        location_sensor.setWalkable(true);
+    }
+    private void setPausedMode() {
+        location_sensor.setWalkable(false);
+    }
+
+
+
+
     private void setFingerDrawMode(){
         map_sensor.show();
         line_drawer.setMinRealStep(10);
@@ -162,6 +209,9 @@ public class Controller {
         location_sensor.setDrawable(true);
         map_sensor.hide();
     }
+
+
+
 
 
 

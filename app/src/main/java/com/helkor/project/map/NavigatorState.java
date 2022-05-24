@@ -32,8 +32,6 @@ public class NavigatorState {
         user_location_layer = map_kit.createUserLocationLayer(map_state.getMapWindow());
         user_location_layer.setObjectListener((UserLocationObjectListener) activity);
         user_location_layer.setVisible(true);
-        this.user_location_view = user_location_view;
-        this.user_location_layer = user_location_layer;
     }
 
     public void init(UserLocationView userLocationView){

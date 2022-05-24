@@ -31,10 +31,14 @@ public class LineDrawer {
     private final int MAX_POINTS = 400;
     private final int MAX_DIVISION_LINE = 500;
     private final double MIN_UNSEEN_STEP = 0.00000001;
+    private static final double WALKED_ACCURACY = 100;
     private double division_step;
     private double min_real_step;
     private double distance;
-    private double path = 0;
+    private double travelled_path;
+
+    private double path;
+    private int travelled_index;
     private boolean is_counting = false;
     private boolean is_phantom_last = false;
     private MapState map_state;
@@ -45,6 +49,9 @@ public class LineDrawer {
         this.controller = controller;
         activity = controller.getActivity();
 
+        travelled_index = 0;
+        travelled_path = 0;
+        path = 0;
         this.map_state = map_state;
         mapObjects = map_state.getMapView().getMap().getMapObjects().addCollection();
     }
@@ -52,7 +59,7 @@ public class LineDrawer {
     private void update(){
         distances.add(distance);
         path += distance;
-
+        controller.updatePathValue(path);
         ArrayList<Point> last_points = new ArrayList<Point>();
             last_points.add(point);
             last_points.add(past_point);
@@ -60,20 +67,15 @@ public class LineDrawer {
         Polyline last_line = new Polyline(last_points);
         polylineObjects.add(polyline = mapObjects.addPolyline(last_line));
         if (polylineObjects.size() > MAX_POINTS) removePoint(0);
-        //debugPolylines();
-    }
-    private void debugPolylines(){
-        //String text = "";
-        //for (ArrayList<Point> points_pair : points) {
-        //    text = text + "\n" + points_pair.get(0).getLongitude() + " " + points_pair.get(0).getLatitude() + " | " + points_pair.get(1).getLongitude() + " " + points_pair.get(1).getLatitude();
-        //}
-        //if (polylineObjects != null && distances.size() > 0) text = "PolylineOBjects size: " + polylineObjects.size() + "\nPath: " + path + "\nFirst Distance: " + distances.get(0) + "\nLast Distance: " + distances.get(polylineObjects.size()-1);
-        //MainActivity.test_text.setText(text);
     }
     private void colorize(){
-        debugPolylines();
         double current_path = 0;
-        for (int i = 0; i < polylineObjects.size(); i++) {
+        for (int i = 0; i < travelled_index; i++) {
+            current_path += distances.get(i);
+            PolylineMapObject polyline = polylineObjects.get(i);
+            polyline.setStrokeColor(Color.argb((int) Math.round(100 + (100*current_path/path)),50,(int) Math.round(128+(127*current_path/path)),(int) Math.round(70+(128*current_path/path))));
+        }
+        for (int i = travelled_index; i < polylineObjects.size(); i++) {
             current_path += distances.get(i);
             PolylineMapObject polyline = polylineObjects.get(i);
             polyline.setStrokeColor(Color.argb((int) Math.round(100 + (100*current_path/path)),(int) Math.round(255*current_path/path),5,155));
@@ -178,6 +180,26 @@ public class LineDrawer {
         colorize();
         is_counting = false;
     }
+    public void checkForTravelled(Point point, double accuracy) {
+        double min_distance;
+
+        double current_possible_distance = 0;
+        int possible_indexes_amount = 0;
+        for (int i = travelled_index; i < points.size();i++){
+            current_possible_distance += distances.get(i);
+            possible_indexes_amount++;
+            if (possible_indexes_amount > WALKED_ACCURACY) break;
+        }
+        for (int i = travelled_index; i < travelled_index + possible_indexes_amount && i < points.size(); i++) {
+            if (Geo.distance(point,points.get(travelled_index).get(0)) < WALKED_ACCURACY / 10 + accuracy) travelled_index = i;
+        }
+        travelled_path = 0;
+        for (int i = 0; i < travelled_index; i++){
+            travelled_path += distances.get(i);
+        }
+        controller.updatePathValue(path,travelled_path);
+        colorize();
+    }
     public void clear(){
         mapObjects.clear();
         polylineObjects.clear();
@@ -185,10 +207,19 @@ public class LineDrawer {
         distances.clear();
         points.clear();
         path = 0;
-        debugPolylines();
+        travelled_index = 0;
+        travelled_path = 0;
+        controller.updatePathValue(path);
         point = null;
         past_point = null;
         text = "";
+    }
+    public void resetWalkedPath(){
+        travelled_index = 0;
+        travelled_path = 0;
+        colorize();
+        controller.updatePathValue(path,travelled_path);
+
     }
     public boolean isCounting(){
         return is_counting;
@@ -200,6 +231,9 @@ public class LineDrawer {
     public Point getLastPoint() {
         if (points.size() > 0) return points.get(points.size()-1).get(0);
         else return null;
+    }
+    public double getPath() {
+        return path;
     }
 
     public void setDivisionStep(double division_step) {
