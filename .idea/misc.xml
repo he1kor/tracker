@@ -4,10 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable-anydpi/navigation_point.xml" value="0.4203125" />
+        <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.325" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/circle.xml" value="0.4203125" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/circle_variant_1.xml" value="0.4203125" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/circle_variant_2.xml" value="0.4203125" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/circle_variant_3.xml" value="0.325" />
+        <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/circle_variant_4.xml" value="0.4203125" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/ic_gps_svgrepo_com.xml" value="0.325" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/ic_launcher_background.xml" value="0.4203125" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/icon_draw_mode.xml" value="0.325" />
@@ -17,6 +19,9 @@
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/drawable/user_arrow.xml" value="0.4203125" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/layout/activity_optional.xml" value="0.3220108695652174" />
+        <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/mipmap-anydpi-v26/Tracker.xml" value="0.4203125" />
+        <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/mipmap-anydpi-v26/Tracker_round.xml" value="0.325" />
+        <entry key="..\:/Users/Helkor/AndroidStudioProjects/Project/app/src/main/res/mipmap-anydpi-v26/tracker.xml" value="0.33697916666666666" />
       </map>
     </option>
   </component>

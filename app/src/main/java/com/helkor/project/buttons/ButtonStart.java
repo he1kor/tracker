@@ -94,22 +94,22 @@ public class ButtonStart {
                 Bar.setColor(R.color.lilac);
                 break;
             case (2):
-                button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_1));
+                button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_4));
                 setText(HtmlCompat.fromHtml("<b><big>" + "Pause" + "</big></b>" +  "<br />" +
                         "<small>" + int_traveled_path + " m /" + "<br />" + int_path + " m" + "</small>",HtmlCompat.FROM_HTML_MODE_COMPACT));
-                Bar.setColor(R.color.light_red);
+                Bar.setColor(R.color.green);
                 break;
             case (3):
-                button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_1));
+                button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_3));
                 setText(HtmlCompat.fromHtml("<b><big>" + "Resume" + "</big></b>" +  "<br />" +
                         "<small>" + int_traveled_path + " m /" + "<br />" + int_path + " m" + "</small>",HtmlCompat.FROM_HTML_MODE_COMPACT));
-                Bar.setColor(R.color.light_red);
+                Bar.setColor(R.color.yellow);
                 break;
             case (4):
-                button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_1));
-                setText(HtmlCompat.fromHtml("<b><big>" + "Finished!" + "</big></b>" +  "<br />" +
+                button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_4));
+                setText(HtmlCompat.fromHtml("<b><medium>" + "Finished!" + "</medium></b>" +  "<br />" +
                         "<small>" + int_path + " m" + "</small>",HtmlCompat.FROM_HTML_MODE_COMPACT));
-                Bar.setColor(R.color.light_red);
+                Bar.setColor(R.color.green);
                 break;
         }
     }

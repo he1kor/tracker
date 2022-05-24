@@ -1,6 +1,7 @@
 package com.helkor.project.global;
 
 import android.app.Activity;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.helkor.project.R;
@@ -50,7 +51,10 @@ public class Controller {
         map_sensor = new MapSensor(this,R.id.relative_layout_1,map_state,line_drawer);
     }
 
-
+    public void test(String text){
+        TextView test = activity.findViewById(R.id.test_text);
+        test.setText(text);
+    }
 
 
     public void initButtons (){
@@ -98,6 +102,10 @@ public class Controller {
                 //From paused mode switch to main mode:
                 button_start.setButtonVariant(0);
                 break;
+            case (4):
+                //From paused mode switch to main mode:
+                button_start.setButtonVariant(0);
+                break;
         }
         holdMainButtonCheckout();
     }
@@ -117,6 +125,7 @@ public class Controller {
 
 
     public void shortMainButtonTriggered(){
+        Bar.stop();
         switch (button_start.getButtonVariant()) {
             case (1):
                 //In draw mode:
@@ -192,6 +201,10 @@ public class Controller {
     }
     private void setPausedMode() {
         location_sensor.setWalkable(false);
+    }
+    public void setFinishedMode(){
+        location_sensor.setWalkable(false);
+        button_start.setButtonVariant(4);
     }
 
 

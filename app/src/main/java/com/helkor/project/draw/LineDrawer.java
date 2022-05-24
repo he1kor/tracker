@@ -3,6 +3,7 @@ package com.helkor.project.draw;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
+import android.widget.TextView;
 
 import com.helkor.project.activities.MainActivity;
 import com.helkor.project.global.Controller;
@@ -40,6 +41,7 @@ public class LineDrawer {
     private double path;
     private int travelled_index;
     private boolean is_counting = false;
+
     private boolean is_phantom_last = false;
     private MapState map_state;
     String text = "";
@@ -181,22 +183,19 @@ public class LineDrawer {
         is_counting = false;
     }
     public void checkForTravelled(Point point, double accuracy) {
-        double min_distance;
-
-        double current_possible_distance = 0;
         int possible_indexes_amount = 0;
-        for (int i = travelled_index; i < points.size();i++){
-            current_possible_distance += distances.get(i);
+        for (int i = travelled_index; i < points.size(); i++){
             possible_indexes_amount++;
             if (possible_indexes_amount > WALKED_ACCURACY) break;
         }
         for (int i = travelled_index; i < travelled_index + possible_indexes_amount && i < points.size(); i++) {
-            if (Geo.distance(point,points.get(travelled_index).get(0)) < WALKED_ACCURACY / 10 + accuracy) travelled_index = i;
+            if (Geo.distance(point,points.get(travelled_index).get(0)) < (WALKED_ACCURACY / 10) + (1.5 * accuracy)) travelled_index = i+1;
         }
         travelled_path = 0;
         for (int i = 0; i < travelled_index; i++){
             travelled_path += distances.get(i);
         }
+        if (travelled_path == path) controller.setFinishedMode();
         controller.updatePathValue(path,travelled_path);
         colorize();
     }
@@ -207,6 +206,7 @@ public class LineDrawer {
         distances.clear();
         points.clear();
         path = 0;
+        is_phantom_last = false;
         travelled_index = 0;
         travelled_path = 0;
         controller.updatePathValue(path);
