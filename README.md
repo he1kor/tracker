@@ -20,7 +20,7 @@ Tracker
 ![image](https://user-images.githubusercontent.com/91742604/169970281-17dd52c9-f86f-4642-b202-c08c6600d56c.png)
 ![image](https://user-images.githubusercontent.com/91742604/169970583-18c9623a-a4cf-4ca4-9d95-d2a38aea0f6b.png)
 ---------------
-Инсрукция
+Инструкция
 ============
 Рисование маршрута
 ------------------
