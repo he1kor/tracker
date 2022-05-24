@@ -1,32 +1,38 @@
 package com.helkor.project.buttons;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 
-import com.helkor.project.MainActivity;
+import com.helkor.project.activities.MainActivity;
 import com.helkor.project.R;
+import com.helkor.project.global.Controller;
+import com.helkor.project.global.YandexMapkit;
 import com.helkor.project.graphics.Bar;
 
 public class ButtonStart {
+    private final Controller controller;
+
+    private Activity activity;
     private boolean isOnHold = false;
     private short button_variant;
     private long time_after_hold;
     private Button button_start;
-    private MainActivity activity;
 
-    public ButtonStart(MainActivity activity, int button_start_id) {
+    public ButtonStart(Controller controller, int button_start_id) {
+        this.controller = controller;
+        activity = controller.getActivity();
+
         button_variant = -1;
         time_after_hold = -100;
         button_start = activity.findViewById(button_start_id);
@@ -40,7 +46,7 @@ public class ButtonStart {
     void Listener(){
         button_start.setOnClickListener(v -> {
             if (!isOnHold && System.currentTimeMillis() - time_after_hold > 15 ) {
-                activity.shortMainButtonTriggered();
+                controller.shortMainButtonTriggered();
             }
         });
 
@@ -50,7 +56,7 @@ public class ButtonStart {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(80, VibrationEffect.DEFAULT_AMPLITUDE));
             }
-            activity.holdMainButtonTriggered();
+            controller.holdMainButtonTriggered();
             return false;
         });
 

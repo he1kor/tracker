@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Tracker</string>
-    <string name="button_variant_1">Clear</string>
+    <string name="button_variant_1">Start</string>
     <string name="button_variant_2">Clear</string>
 </resources>

@@ -1,6 +1,10 @@
 package com.helkor.project.buttons;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -8,19 +12,24 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
-
-import com.helkor.project.MainActivity;
+import com.helkor.project.activities.MainActivity;
 import com.helkor.project.R;
-import com.helkor.project.graphics.Bar;
+import com.helkor.project.global.Controller;
+import com.helkor.project.global.YandexMapkit;
 
 public class ButtonSwitchDraw {
+
+    private final Controller controller;
+    Activity activity;
+
     private short button_variant;
     private ImageButton button_switch_draw;
-    MainActivity activity;
-    public ButtonSwitchDraw(MainActivity activity, int button_switch_draw_id){
+    public ButtonSwitchDraw(Controller controller, int button_switch_draw_id){
+
+        this.controller = controller;
+        activity = controller.getActivity();
+
         button_variant = 0;
         button_switch_draw = activity.findViewById(button_switch_draw_id);
         button_switch_draw.setVisibility(View.INVISIBLE);
@@ -36,7 +45,7 @@ public class ButtonSwitchDraw {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
                 }
-                activity.shortSwitchButtonTriggered();
+                controller.shortSwitchButtonTriggered();
             }
         });
     }
@@ -56,12 +65,28 @@ public class ButtonSwitchDraw {
         }
     }
     public void show(){
-        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button);
+        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button_show);
+
+        button_switch_draw.setBackgroundTintList(ColorStateList.valueOf(activity.getColor(R.color.lilac)));
+
         button_switch_draw.startAnimation(animation);
         button_switch_draw.setVisibility(View.VISIBLE);
     }
     public void hide(){
-        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button_back);
+        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button_hide);
+
+        int colorFrom = activity.getColor(R.color.lilac);
+        int colorTo = activity.getColor(R.color.light_red);
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(500);
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(){
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                button_switch_draw.setBackgroundTintList(ColorStateList.valueOf((int)animator.getAnimatedValue()));
+            }
+
+        });
+        colorAnimation.start();
         button_switch_draw.startAnimation(animation);
         button_switch_draw.setVisibility(View.GONE);
     }

@@ -1,35 +1,36 @@
-package com.helkor.project;
+package com.helkor.project.draw;
 
+import android.app.Activity;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.helkor.project.activities.MainActivity;
 import com.helkor.project.draw.LineDrawer;
-import com.helkor.project.tech.map.ShortLocation;
+import com.helkor.project.global.Controller;
+import com.helkor.project.global.YandexMapkit;
+import com.helkor.project.map.MapState;
 import com.helkor.project.tech.map.ShortLocationArray;
 import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
+import com.yandex.mapkit.location.FilteringMode;
 import com.yandex.mapkit.location.Location;
 import com.yandex.mapkit.location.LocationListener;
+import com.yandex.mapkit.location.LocationManager;
 import com.yandex.mapkit.location.LocationStatus;
 import com.yandex.mapkit.map.CameraListener;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.map.CameraUpdateReason;
 import com.yandex.mapkit.map.Map;
-import com.yandex.mapkit.map.MapLoadStatistics;
-import com.yandex.mapkit.map.MapLoadedListener;
-import com.yandex.mapkit.map.MapType;
 import com.yandex.mapkit.mapview.MapView;
-import com.yandex.runtime.sensors.internal.LastKnownLocation;
 
-import java.util.ArrayList;
+public class LocationSensor{
+    private final Controller controller;
 
-public class LocationUpdater {
     private CameraListener myCameraListener;
     private LocationListener myLocationListener;
-    private MainActivity activity;
+    private Activity activity;
     private MapView map_view;
     private Map map;
     private LineDrawer line_drawer;
@@ -38,20 +39,26 @@ public class LocationUpdater {
     private boolean isMapLoaded;
 
     private boolean is_drawable = false;
-    private final int COMFORTABLE_ZOOM_LEVEL;
+    private final float COMFORTABLE_ZOOM_LEVEL;
 
     private boolean expecting_location;
     private float expecting_zoom;
+    private LocationManager location_manager;
 
     private Point myLocation;
-    LocationUpdater(MainActivity activity, MapView map_view, int COMFORTABLE_ZOOM_LEVEL, LineDrawer line_drawer){
-        this.activity = activity;
-        this.map_view = map_view;
+    public LocationSensor(Controller controller, MapState map_state, float COMFORTABLE_ZOOM_LEVEL, LineDrawer line_drawer){
+
+        this.controller = controller;
+        activity = controller.getActivity();
+
+        this.map_view = map_state.getMapView();
         this.map = map_view.getMap();
         this.COMFORTABLE_ZOOM_LEVEL = COMFORTABLE_ZOOM_LEVEL;
         this.line_drawer = line_drawer;
         last_locations = new ShortLocationArray(MAX_CHECK_LINE);
         isMapLoaded = false;
+        location_manager = map_state.getMapKit().createLocationManager();
+
         Listener();
     }
     private void updateLocation(Location location){
@@ -68,15 +75,13 @@ public class LocationUpdater {
                 if (is_drawable && last_locations.size() == MAX_CHECK_LINE) addPoint();
 
                 if (myLocation == null) {
-                    firstMoveCamera(map_view,location.getPosition(), 16.25f);
+                    firstMoveCamera(location.getPosition(), 16.25f);
                 }
                 if (expecting_location) {
-                    moveCamera(map_view,location.getPosition(), expecting_zoom,1);
+                    moveCamera(location.getPosition(), expecting_zoom,1);
                     setExpectingLocation(false);
                 }
                 myLocation = location.getPosition();
-                //MainActivity.test_text.setText("Size: " + last_locations.size() + "\nMaxDistance: " + last_locations.getMaxDistance());
-                Log.w(activity.TAG, "my location - " + last_locations.getLastLatitude() + "," + last_locations.getLastLongitude());
             }
 
             @Override
@@ -95,12 +100,15 @@ public class LocationUpdater {
     }
     private void addPoint(){
 
-        double distance = last_locations.getMaxDistance();
-        double accuracy = last_locations.getLastAccuracy();
-
-        if (!line_drawer.isCounting() && distance + 10 > accuracy) line_drawer.addPoint(last_locations.getLastPoint());
+        Point lastDrewPoint = line_drawer.getLastPoint();
+        if (lastDrewPoint != null) {
+            if (Geo.distance(lastDrewPoint, last_locations.getLastPoint()) > last_locations.getLastAccuracy())
+                line_drawer.addPoint(last_locations.getLastPoint());
+            else if (Geo.distance(line_drawer.getLastPoint(),last_locations.getLastPoint()) > 5) line_drawer.addPhantomPoint(last_locations.getLastPoint());
+        }
+        else line_drawer.addPoint(last_locations.getMinimalAccuracyPoint().getPoint());
     }
-    public void moveCamera(MapView map_view,Point point, float zoom,float duration) {
+    public void moveCamera(Point point, float zoom,float duration) {
         if (point != null) {
             map.move(
                     new CameraPosition(point, zoom, 0.0f, 0.0f),
@@ -113,14 +121,14 @@ public class LocationUpdater {
             expecting_location = true;
         }
     }
-    private void firstMoveCamera(MapView map_view,Point point, float zoom){
+    private void firstMoveCamera(Point point, float zoom){
         map.move(
                 new CameraPosition(point, zoom, 0.0f, 0.0f),
                 new Animation(Animation.Type.LINEAR, 0),
                 new Map.CameraCallback() {
                     @Override
                     public void onMoveFinished(boolean b) {
-                        activity.initMainButton();
+                        controller.initButtons();
                     }
                 }
         );
@@ -129,7 +137,15 @@ public class LocationUpdater {
     public void setExpectingLocation(boolean exception_location) {
         this.expecting_location = exception_location;
     }
-
+    public void subscribeToLocationUpdate() {
+        if (location_manager != null && myLocationListener != null) {
+            double DESIRED_ACCURACY = 0;
+            long MINIMAL_TIME = 1;
+            double MINIMAL_DISTANCE = 0;
+            boolean USE_IN_BACKGROUND = true;
+            location_manager.subscribeForLocationUpdates(DESIRED_ACCURACY, MINIMAL_TIME, MINIMAL_DISTANCE, USE_IN_BACKGROUND, FilteringMode.OFF, myLocationListener);
+        }
+    }
 
     public LocationListener getMyLocationListener() {
         return myLocationListener;

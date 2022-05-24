@@ -26,5 +26,5 @@
         android:toXDelta="0%"
         />
 
-        android:interpolator="@android:anim/accelerate_interpolator"
+    android:interpolator="@android:anim/accelerate_interpolator"
 </set>

@@ -1,29 +1,39 @@
 package com.helkor.project.draw;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.helkor.project.global.Controller;
+import com.helkor.project.map.MapState;
 import com.yandex.mapkit.ScreenPoint;
 import com.yandex.mapkit.geometry.Point;
+import com.yandex.mapkit.location.FilteringMode;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.mapview.MapView;
 
 public class MapSensor{
+    private final Controller controller;
+
     private float x;
     private float y;
 
     private View drawable_relative;
-    private MapView mapView;
-    private LineDrawer lineDrawer;
+    private MapView map_view;
+    private LineDrawer line_drawer;
 
     private Point point = new Point(0,0);
     CameraPosition currentCameraPosition;
 
-    public MapSensor(View drawable_relative, MapView mapView, LineDrawer lineDrawer) {
-        this.drawable_relative = drawable_relative;
-        this.mapView = mapView;
-        this.lineDrawer = lineDrawer;
+    public MapSensor(Controller controller, int id, MapState map_state, LineDrawer line_drawer) {
+
+        this.controller = controller;
+        Activity activity = controller.getActivity();
+
+        this.drawable_relative = activity.findViewById(id);
+        this.map_view = map_state.getMapView();
+        this.line_drawer = line_drawer;
         Listener();
     }
     @SuppressLint("ClickableViewAccessibility")
@@ -33,11 +43,17 @@ public class MapSensor{
             public boolean onTouch(View v, MotionEvent event) {
                 x = event.getX();
                 y = event.getY();
-                point = mapView.screenToWorld(new ScreenPoint(x,y));
-                currentCameraPosition = mapView.getMap().getCameraPosition();
-                if (!lineDrawer.isCounting()) lineDrawer.addPoint(point);
+                point = map_view.screenToWorld(new ScreenPoint(x,y));
+                currentCameraPosition = map_view.getMap().getCameraPosition();
+                if (!line_drawer.isCounting()) line_drawer.addPoint(point);
                 return true;
             }
         });
+    }
+    public void show(){
+        drawable_relative.setVisibility(View.VISIBLE);
+    }
+    public void hide(){
+        drawable_relative.setVisibility(View.INVISIBLE);
     }
 }

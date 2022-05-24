@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <RelativeLayout
         android:id="@+id/background"
@@ -63,16 +63,16 @@
         android:layout_marginBottom="160dp"
         android:background="@drawable/circle_variant_2"
         android:padding="15dp"
-        android:translationZ="95dp"
         android:scaleType="centerInside"
         android:src="@drawable/icon_gps_mode"
         android:textSize="34sp"
+        android:translationZ="95dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/button_start"
-        tools:visibility="visible"
-        app:tint="#FFFFFF" />
+        app:tint="#FFFFFF"
+        tools:visibility="visible" />
     <RelativeLayout
         android:id="@+id/relative_layout_1"
         android:layout_width="match_parent"

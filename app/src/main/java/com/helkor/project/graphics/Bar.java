@@ -1,16 +1,17 @@
 package com.helkor.project.graphics;
 
+import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.helkor.project.MainActivity;
-import com.helkor.project.R;
+import com.helkor.project.activities.MainActivity;
 
 public class Bar {
-    private static MainActivity activity;
+    private static Activity activity;
     private static ValueAnimator anim;
     static ValueAnimator.AnimatorUpdateListener animatorUpdateListener;
 
@@ -19,19 +20,14 @@ public class Bar {
     }
 
     public static void animateColor(int from_color, int to_color, int time) {
-        final int status_bar_color = from_color;
-        final int status_bar_to_color = to_color;
 
-        anim = ValueAnimator.ofFloat(0, 1);
+        anim = ValueAnimator.ofObject(new ArgbEvaluator(), from_color, to_color);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 animatorUpdateListener = this;
-                float position = animation.getAnimatedFraction();
-
-                int blended = Colors.blend(status_bar_color, status_bar_to_color, position);
-                activity.getWindow().setStatusBarColor(blended);
+                activity.getWindow().setStatusBarColor((int)animation.getAnimatedValue());
             }
         });
 
@@ -41,7 +37,7 @@ public class Bar {
         anim.removeUpdateListener(animatorUpdateListener);
         anim.cancel();
     }
-    public static void setActivity(MainActivity activity){
+    public static void setActivity(Activity activity){
         Bar.activity = activity;
     }
 }
