@@ -9,7 +9,6 @@ import com.helkor.project.global.Controller;
 import com.helkor.project.map.MapState;
 import com.yandex.mapkit.ScreenPoint;
 import com.yandex.mapkit.geometry.Point;
-import com.yandex.mapkit.location.FilteringMode;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.mapview.MapView;
 

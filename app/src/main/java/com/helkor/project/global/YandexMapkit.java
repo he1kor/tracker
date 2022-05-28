@@ -3,7 +3,6 @@ package com.helkor.project.global;
 import android.app.Activity;
 
 import com.helkor.project.BuildConfig;
-import com.helkor.project.R;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 

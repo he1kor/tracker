@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.helkor.project.R;
 import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.buttons.ButtonSwitchDraw;
@@ -241,4 +242,5 @@ public class Controller {
     public NavigatorState getNavigatorState(){
         return navigator_state;
     }
+
 }

@@ -1,6 +1,5 @@
 package com.helkor.project.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -9,14 +8,10 @@ import com.helkor.project.R;
 import com.helkor.project.global.Controller;
 import com.helkor.project.global.YandexMapkit;
 import com.yandex.mapkit.MapKit;
-import com.yandex.mapkit.layers.ObjectEvent;
-import com.yandex.mapkit.user_location.UserLocationObjectListener;
-import com.yandex.mapkit.user_location.UserLocationView;
 
-public class MainActivity extends AppCompatActivity implements UserLocationObjectListener {
+public class MainActivity extends AppCompatActivity{
 
     Controller controller;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +33,5 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     protected void onStart() {
         super.onStart();
         controller.onStart();
-    }
-
-    //Navigator setup
-    @Override
-    public void onObjectAdded(UserLocationView userLocationView) {
-        controller.getNavigatorState().init(userLocationView);
-    }
-
-    @Override
-    public void onObjectRemoved(@NonNull UserLocationView userLocationView) {
-    }
-
-    @Override
-    public void onObjectUpdated(@NonNull UserLocationView userLocationView, @NonNull ObjectEvent objectEvent) {
-        controller.getNavigatorState().update(userLocationView);
     }
 }
