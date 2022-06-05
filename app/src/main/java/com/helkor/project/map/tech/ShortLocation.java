@@ -1,4 +1,4 @@
-package com.helkor.project.tech.map;
+package com.helkor.project.map.tech;
 
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.location.Location;

@@ -1,17 +1,12 @@
 package com.helkor.project.draw;
 
 import android.app.Activity;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.helkor.project.activities.MainActivity;
-import com.helkor.project.draw.LineDrawer;
 import com.helkor.project.global.Controller;
-import com.helkor.project.global.YandexMapkit;
 import com.helkor.project.map.MapState;
-import com.helkor.project.tech.map.ShortLocationArray;
+import com.helkor.project.map.tech.ShortLocationArray;
 import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
