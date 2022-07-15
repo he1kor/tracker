@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.helkor.project.global.Controller;
 import com.helkor.project.map.MapState;
-import com.helkor.project.map.tech.ShortLocationArray;
+import com.helkor.project.map.util.ShortLocationArray;
 import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
@@ -58,7 +58,7 @@ public class LocationSensor{
 
         Listener();
     }
-    private void updateLocation(Location location){
+    private void setLocation(Location location){
         last_locations.add(location);
     }
 
@@ -68,6 +68,7 @@ public class LocationSensor{
 
             @Override
             public void onLocationUpdated(@NonNull Location location) {
+                controller.test("" + location.getAccuracy());
                 last_locations.add(location);
                 if (is_walkable) {
                     line_drawer.checkForTravelled(location.getPosition(),location.getAccuracy());
@@ -104,7 +105,7 @@ public class LocationSensor{
         if (lastDrewPoint != null) {
             if (Geo.distance(lastDrewPoint, last_locations.getLastPoint()) > last_locations.getLastAccuracy())
                 line_drawer.addPoint(last_locations.getLastPoint());
-            else if (Geo.distance(line_drawer.getLastPoint(),last_locations.getLastPoint()) > 5) line_drawer.addPhantomPoint(last_locations.getLastPoint());
+            else if (Geo.distance(line_drawer.getLastPoint(),last_locations.getLastPoint()) > 5) line_drawer.addPoint(last_locations.getLastPoint(),true);
         }
         else line_drawer.addPoint(last_locations.getMinimalAccuracyPoint().getPoint());
     }

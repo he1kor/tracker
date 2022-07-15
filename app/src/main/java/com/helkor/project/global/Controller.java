@@ -35,7 +35,7 @@ public class Controller {
     private ButtonSwitchDraw button_switch_draw;
 
 
-    private final float COMFORTABLE_ZOOM_LEVEL = 20;
+    private final float COMFORTABLE_ZOOM_LEVEL = 16.5f;
 
     public Controller(Activity activity,MapKit map_kit){
         this.activity = activity;

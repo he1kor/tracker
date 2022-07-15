@@ -1,4 +1,4 @@
-package com.helkor.project.tech;
+package com.helkor.project.util;
 
 public class Bool {
     public static String toString(boolean bool){
