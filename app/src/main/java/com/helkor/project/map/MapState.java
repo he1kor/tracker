@@ -3,14 +3,10 @@ package com.helkor.project.map;
 import android.app.Activity;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.helkor.project.R;
 import com.helkor.project.draw.LocationSensor;
 import com.helkor.project.global.Controller;
 import com.yandex.mapkit.MapKit;
-import com.yandex.mapkit.MapKitFactory;
-import com.yandex.mapkit.location.FilteringMode;
 import com.yandex.mapkit.location.LocationManager;
 import com.yandex.mapkit.map.Map;
 import com.yandex.mapkit.map.MapObjectCollection;
