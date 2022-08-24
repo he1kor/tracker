@@ -45,4 +45,9 @@ public class RouteSegment {
     public PolylineMapObject getPolylineObject() {
         return polyline_object;
     }
+
+    public static Vector toLine(RouteSegment route_segment){
+        Vector vector = new Vector(route_segment.previous_point, route_segment.last_point);
+        return vector;
+    }
 }
