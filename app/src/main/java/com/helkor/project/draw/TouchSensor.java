@@ -12,7 +12,7 @@ import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.mapview.MapView;
 
-public class MapSensor{
+public class TouchSensor {
     private final Controller controller;
 
     private float x;
@@ -25,7 +25,7 @@ public class MapSensor{
     private Point point = new Point(0,0);
     CameraPosition currentCameraPosition;
 
-    public MapSensor(Controller controller, int id, MapState map_state, LineDrawer line_drawer) {
+    public TouchSensor(Controller controller, int id, MapState map_state, LineDrawer line_drawer) {
 
         this.controller = controller;
         Activity activity = controller.getActivity();

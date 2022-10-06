@@ -2,7 +2,6 @@ package com.helkor.project.global;
 
 import android.app.Activity;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.helkor.project.R;
@@ -10,7 +9,7 @@ import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.buttons.ButtonSwitchDraw;
 import com.helkor.project.draw.LineDrawer;
 import com.helkor.project.draw.LocationSensor;
-import com.helkor.project.draw.MapSensor;
+import com.helkor.project.draw.TouchSensor;
 import com.helkor.project.graphics.Background;
 import com.helkor.project.graphics.Bar;
 import com.helkor.project.map.MapState;
@@ -28,14 +27,17 @@ public class Controller {
 
     private MapState map_state;
     private NavigatorState navigator_state;
+
     private LineDrawer line_drawer;
+
     private LocationSensor location_sensor;
-    private MapSensor map_sensor;
+    private TouchSensor map_sensor;
+
     private ButtonStart button_start;
     private ButtonSwitchDraw button_switch_draw;
 
 
-    private final float COMFORTABLE_ZOOM_LEVEL = 16.5f;
+    private final float COMFORTABLE_ZOOM_LEVEL = 18.5f;
 
     public Controller(Activity activity,MapKit map_kit){
         this.activity = activity;
@@ -49,7 +51,7 @@ public class Controller {
         navigator_state = new NavigatorState(this,map_state);
         line_drawer = new LineDrawer(this,map_state);
         location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer);
-        map_sensor = new MapSensor(this,R.id.relative_layout_1,map_state,line_drawer);
+        map_sensor = new TouchSensor(this,R.id.relative_layout_1,map_state,line_drawer);
     }
 
     public void test(String text){
@@ -213,8 +215,8 @@ public class Controller {
 
     private void setFingerDrawMode(){
         map_sensor.show();
-        line_drawer.setMinRealStep(10);
-        line_drawer.setDivisionStep(20);
+        line_drawer.setMinRealStep(5);
+        line_drawer.setDivisionStep(10);
         location_sensor.setDrawable(false);
     }
     private void setNavigatorDrawMode(){

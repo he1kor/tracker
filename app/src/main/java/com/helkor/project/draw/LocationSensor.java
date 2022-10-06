@@ -68,7 +68,6 @@ public class LocationSensor{
 
             @Override
             public void onLocationUpdated(@NonNull Location location) {
-                controller.test("" + location.getAccuracy());
                 last_locations.add(location);
                 if (is_walkable) {
                     line_drawer.checkForTravelled(location.getPosition(),location.getAccuracy());

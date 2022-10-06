@@ -15,19 +15,23 @@ public class RouteSegment {
     Point last_point;
     double length;
     PolylineMapObject polyline_object;
+    Polyline polyline;
 
-    public RouteSegment (Point previous_point, Point last_point, MapObjectCollection polyline_collection){
+
+    public RouteSegment (Point previous_point, Point last_point, ArrayList<RouteSegment> new_segments){
 
         this.previous_point = previous_point;
         this.last_point = last_point;
 
         length = Geo.distance(this.previous_point,this.last_point);
-
         {
             ArrayList<Point> both_points = new ArrayList<>(Arrays.asList(previous_point,last_point));
-            polyline_object = polyline_collection.addPolyline(new Polyline(both_points));
+            polyline = new Polyline(both_points);
+            new_segments.add(this);
         }
-
+    }
+    public void setPolylineObject(PolylineMapObject polyline_object){
+        this.polyline_object = polyline_object;
     }
 
     public Point getPreviousPoint() {
@@ -42,11 +46,15 @@ public class RouteSegment {
         return length;
     }
 
+    public Polyline getPolyline() {
+        return polyline;
+    }
+
     public PolylineMapObject getPolylineObject() {
         return polyline_object;
     }
 
-    public static Vector toLine(RouteSegment route_segment){
+    public static Vector toVector(RouteSegment route_segment){
         Vector vector = new Vector(route_segment.previous_point, route_segment.last_point);
         return vector;
     }

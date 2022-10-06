@@ -33,18 +33,23 @@ public class Vector {
     }
     public Vector multiply(double multiplier, boolean is_from_main_point){
 
-        double pointed_difference_latitude = main_point.getLatitude() - second_point.getLatitude();
-        double pointed_difference_longitude = main_point.getLongitude() - second_point.getLongitude();
+        double pointed_difference_latitude = second_point.getLatitude() - main_point.getLatitude();
+        double pointed_difference_longitude = second_point.getLongitude() - main_point.getLongitude();
 
         Point shifted_point = is_from_main_point ?
-                new Point(main_point.getLatitude() + (pointed_difference_latitude * multiplier),main_point.getLongitude() + (pointed_difference_longitude * multiplier)) :
-                new Point(second_point.getLatitude() - (pointed_difference_latitude * multiplier),second_point.getLongitude() - (pointed_difference_longitude * multiplier));
+                new Point(main_point.getLatitude() + (pointed_difference_latitude * multiplier),main_point.getLongitude() + (pointed_difference_longitude * multiplier))
+                : new Point(second_point.getLatitude() - (pointed_difference_latitude * multiplier),second_point.getLongitude() - (pointed_difference_longitude * multiplier));
 
         Vector product = is_from_main_point ?
-                new Vector(main_point,shifted_point) :
-                new Vector(second_point,shifted_point);
+                new Vector(main_point,shifted_point)
+                : new Vector(second_point,shifted_point);
 
+        length = Vector.length(main_point,second_point);
         return product;
+    }
+    public Point getPointByMultiplier(double multiplier){
+        Point intermediate_point = multiply(multiplier,true).getSecondPoint();
+        return intermediate_point;
     }
 
     public static double toLongitudeStep(Point first_point, Point second_point, double step_length){
