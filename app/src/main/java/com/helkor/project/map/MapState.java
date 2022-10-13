@@ -48,7 +48,7 @@ public class MapState {
     public void onStart(LocationSensor location_sensor) {
         map_kit.onStart();
         map_view.onStart();
-        location_sensor.subscribeToLocationUpdate();
+        //location_sensor.subscribeToLocationUpdate();
     }
 
     private void init(){

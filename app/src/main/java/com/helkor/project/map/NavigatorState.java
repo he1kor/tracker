@@ -34,7 +34,7 @@ public class NavigatorState implements UserLocationObjectListener{
 
         map_kit = MapKitFactory.getInstance();
         user_location_layer = map_kit.createUserLocationLayer(map_state.getMapWindow());
-        user_location_layer.setObjectListener((UserLocationObjectListener) this);
+        user_location_layer.setObjectListener(this);
         user_location_layer.setVisible(true);
     }
 

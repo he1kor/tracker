@@ -46,12 +46,13 @@ public class Controller {
     }
 
     public void setup(){
-
         map_state = new MapState(this,map_kit,R.id.map);
-        navigator_state = new NavigatorState(this,map_state);
+
         line_drawer = new LineDrawer(this,map_state);
-        location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer);
+        location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer,map_kit);
+        navigator_state = new NavigatorState(this,map_state);
         map_sensor = new TouchSensor(this,R.id.relative_layout_1,map_state,line_drawer);
+        System.out.println("setuped");
     }
 
     public void test(String text){
@@ -59,8 +60,8 @@ public class Controller {
         test.setText(text);
     }
 
-
     public void initButtons (){
+        System.out.println("showing");
         map_state.show();
         Background.vanishing(activity);
         Bar.setActivity(activity);
@@ -74,9 +75,6 @@ public class Controller {
         setCommonMode();
         location_sensor.moveCamera(location_sensor.getMyLocation(), COMFORTABLE_ZOOM_LEVEL+1,3);
     }
-
-
-
 
     public void updatePathValue(double path){
         button_start.updateView(path);

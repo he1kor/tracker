@@ -17,6 +17,7 @@ public class TouchSensor {
 
     private float x;
     private float y;
+    private boolean isStarted;
 
     private View drawable_relative;
     private MapView map_view;
@@ -25,12 +26,16 @@ public class TouchSensor {
     private Point point = new Point(0,0);
     CameraPosition currentCameraPosition;
 
+    public void setStarted(boolean started) {
+        isStarted = started;
+    }
     public TouchSensor(Controller controller, int id, MapState map_state, LineDrawer line_drawer) {
 
         this.controller = controller;
         Activity activity = controller.getActivity();
 
         this.drawable_relative = activity.findViewById(id);
+        drawable_relative.setVisibility(View.INVISIBLE); 
         this.map_view = map_state.getMapView();
         this.line_drawer = line_drawer;
         Listener();

@@ -23,7 +23,9 @@ public class ShortLocationArray {
         if (short_location_array.size() >= MAX_CHECK_LINE){
             short_location_array.remove(0);
         }
-        else size++;
+        else {
+            size++;
+        }
         short_location_array.add(new ShortLocation(location));
         max_distance = 0;
         double min_accuracy = 1000;

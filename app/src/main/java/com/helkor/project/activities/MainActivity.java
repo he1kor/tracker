@@ -8,6 +8,7 @@ import com.helkor.project.R;
 import com.helkor.project.global.Controller;
 import com.helkor.project.global.YandexMapkit;
 import com.yandex.mapkit.MapKit;
+import com.yandex.mapkit.MapKitFactory;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -26,8 +27,8 @@ public class MainActivity extends AppCompatActivity{
     //MapKitFactory setup & stop
     @Override
     protected void onStop() {
-        super.onStop();
         controller.onStop();
+        super.onStop();
     }
     @Override
     protected void onStart() {
