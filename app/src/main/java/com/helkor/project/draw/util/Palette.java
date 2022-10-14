@@ -12,9 +12,12 @@ public class Palette {
     public static void configure(PolylineMapObject polyline,int resolution){
         for (int subPaletteIndex = 0; subPaletteIndex < SUB_PALETTES_AMOUNT; subPaletteIndex++) {
             for (int i = 0; i < resolution; i++) {
-                polyline.setPaletteColor(i + (resolution * subPaletteIndex), getSubColor(subPaletteIndex,i, resolution));
+                setPaletteColor(polyline,subPaletteIndex,i,resolution);
             }
         }
+    }
+    public static void setPaletteColor(PolylineMapObject polyline, int subPaletteIndex, int index, int resolution) {
+        polyline.setPaletteColor(index + (resolution * subPaletteIndex), getSubColor(subPaletteIndex,index, resolution));
     }
     public static int percentToIndex(double percent, int subPaletteIndex, int resolution){
         return (int) (subPaletteIndex * resolution + Math.round(percent * (resolution-1)));

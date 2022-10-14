@@ -49,7 +49,7 @@ public class TouchSensor {
                 y = event.getY();
                 point = map_view.screenToWorld(new ScreenPoint(x,y));
                 currentCameraPosition = map_view.getMap().getCameraPosition();
-                line_drawer.addPoint(point);
+                line_drawer.buildToPoint(point);
                 return true;
             }
         });

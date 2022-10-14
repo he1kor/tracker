@@ -107,12 +107,12 @@ public class LocationSensor{
         Point lastDrewPoint = line_drawer.getLastPoint();
         if (lastDrewPoint != null) {
             if (Geo.distance(lastDrewPoint, last_locations.getLastPoint()) > last_locations.getLastAccuracy())
-                line_drawer.addPoint(last_locations.getLastPoint(),false);
+                line_drawer.buildToPoint(last_locations.getLastPoint(),false);
             else {
-                line_drawer.addPoint(last_locations.getLastPoint(),true);
+                line_drawer.buildToPoint(last_locations.getLastPoint(),true);
             }
         }
-        else line_drawer.addPoint(last_locations.getMinimalAccuracyPoint().getPoint());
+        else line_drawer.buildToPoint(last_locations.getMinimalAccuracyPoint().getPoint());
     }
     public void moveCamera(Point point, float zoom,float duration) {
         if (point != null) {
