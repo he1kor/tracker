@@ -3,32 +3,19 @@ package com.helkor.project.draw;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.util.Log;
-import android.util.Pair;
-import android.util.proto.ProtoOutputStream;
 
-import com.helkor.project.R;
 import com.helkor.project.draw.util.Palette;
 import com.helkor.project.draw.util.Vector;
-import com.helkor.project.draw.util.RouteSegment;
 import com.helkor.project.global.Controller;
 import com.helkor.project.map.MapState;
-import com.helkor.project.util.Intersection;
 import com.yandex.mapkit.geometry.Geo;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.geometry.Polyline;
-import com.yandex.mapkit.map.MapObject;
 import com.yandex.mapkit.map.MapObjectCollection;
 import com.yandex.mapkit.map.PolylineMapObject;
 
-import java.sql.Array;
-import java.sql.Struct;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class LineDrawer {
 
