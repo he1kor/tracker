@@ -188,7 +188,7 @@ public class Controller {
         map_sensor.hide();
         location_sensor.setDrawable(false);
         location_sensor.setWalkable(false);
-        line_drawer.resetWalkedPath();
+        line_drawer.resetTravelledPath();
 
     }
     private void setDrawMode(){

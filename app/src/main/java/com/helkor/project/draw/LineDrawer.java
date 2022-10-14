@@ -23,6 +23,7 @@ import com.yandex.mapkit.map.MapObjectCollection;
 import com.yandex.mapkit.map.PolylineMapObject;
 
 import java.sql.Array;
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +45,6 @@ public class LineDrawer {
     private double intermediate_multiplier;
 
     boolean is_last_segment_divided;
-    boolean is_divided_segment_changed;
     private boolean is_temporary_last;
 
     private final int MAX_POINTS = 400;
@@ -63,8 +63,9 @@ public class LineDrawer {
         map_object_collection = map_state.getMapView().getMap().getMapObjects().addCollection();
         routePoints = new ArrayList<>();
 
+        intermediate_multiplier = 0;
+        is_last_segment_divided = false;
         is_temporary_last = false;
-        is_last_segment_divided = true;
         travelled_index = 0;
         travelled_path = 0;
         path = 0;
@@ -99,25 +100,30 @@ public class LineDrawer {
         double current_path = 0;
         ArrayList<Integer> colorIndexes = new ArrayList<>();
         for (int i = 1; i <= travelled_index; i++) {
-            current_path += Geo.distance(routePoints.get(i-1),routePoints.get(i));
+            current_path += getDistance(i-1,i);
             colorIndexes.add(Palette.percentToIndex(current_path/path,Palette.PALETTE_GREEN,MAX_SEGMENTS));
         }
         for (int i = travelled_index + 1; i < routePoints.size(); i++) {
-            current_path += Geo.distance(routePoints.get(i-1),routePoints.get(i));
+            current_path += getDistance(i-1,i);
             colorIndexes.add(Palette.percentToIndex(current_path/path,Palette.PALETTE_RED,MAX_SEGMENTS));
         }
         route.setStrokeColors(colorIndexes);
     }
 
 
-
+    private double getDistance(int i1, int i2){
+        return Geo.distance(routePoints.get(i1),routePoints.get(i2));
+    }
+    private double getDistance(Point point1, Point point2){
+        return Geo.distance(point1,point2);
+    }
     private void addFrontPoint(Point point){
         routePoints.add(point);
         if (routePoints.size() == 1) {
             return;
         }
         int index = routePoints.size()-1;
-        path += Geo.distance(routePoints.get(index),routePoints.get(index-1));
+        path += getDistance(index,index-1);
     }
     private void removeRearPoint(){
         if (routePoints.size() == 0) {
@@ -129,7 +135,7 @@ public class LineDrawer {
             Log.i(TAG,"Removed most last point");
             return;
         }
-        path -= Geo.distance(routePoints.get(0),routePoints.get(1));
+        path -= getDistance(0,1);
         routePoints.remove(0);
     }
     private void removeFrontPoint(){
@@ -143,7 +149,7 @@ public class LineDrawer {
             return;
         }
         int index = routePoints.size()-1;
-        path -= Geo.distance(routePoints.get(index),routePoints.get(index-1));
+        path -= getDistance(index,index-1);
         routePoints.remove(index);
     }
 
@@ -193,7 +199,7 @@ public class LineDrawer {
             addFirstPoint(point);
         } else {
             Point last_point = routePoints.get(routePoints.size()-1);
-            double distance = Geo.distance(point, last_point);
+            double distance = getDistance(point,last_point);
             if (distance > division_step){
                 addPointsLine(point,last_point);
             }
@@ -208,7 +214,11 @@ public class LineDrawer {
     }
 
 
-
+    private void removeDividedPoint(){
+        routePoints.remove(travelled_index);
+        intermediate_multiplier = 0;
+        is_last_segment_divided = false;
+    }
 
     public void checkForTravelled(Point current_position, double accuracy) {
         double checking_distance = accuracy + MIN_ADDITIONAL_ACCURACY;
@@ -220,72 +230,67 @@ public class LineDrawer {
     public void checkWholeSteps(Point current_position,double checking_distance){
         int possible_indexes_amount = (int) Math.min(WALKED_ACCURACY, routePoints.size()-travelled_index-1);
         for (int i = 0; (i < possible_indexes_amount); i++) {
-            if (travelled_index == 0) {
-                if (Geo.distance(current_position, routePoints.get(1)) < checking_distance) {
+            if (getDistance(current_position, routePoints.get(travelled_index+1)) < checking_distance) {
+                travelled_path += getDistance(travelled_index,travelled_index+1);
+                if (is_last_segment_divided) {
+                    removeDividedPoint();
+                } else {
                     travelled_index++;
-                    travelled_path += Geo.distance(routePoints.get(travelled_index),routePoints.get(travelled_index-1));
-                    intermediate_multiplier = 0;
-                    is_divided_segment_changed = false;
-                }
-            }
-            else {
-                if (Geo.distance(current_position, routePoints.get(travelled_index+1)) < checking_distance) {
-                    if (is_last_segment_divided) {
-                        travelled_path += Geo.distance(routePoints.get(travelled_index),routePoints.get(travelled_index+1));
-                        routePoints.remove(travelled_index);
-                        is_last_segment_divided = false;
-                        System.out.println("removed by whole");
-                    } else {
-                        travelled_index++;
-                        travelled_path += Geo.distance(routePoints.get(travelled_index),routePoints.get(travelled_index-1));
-                    }
                 }
             }
         }
     }
     public void checkSubSteps(Point current_position,double checking_distance){
-        if (travelled_path < path && travelled_index >= 0) {
-            Point intermediate_point = new Vector(routePoints.get(travelled_index),routePoints.get(travelled_index+1)).getPointByMultiplier(intermediate_multiplier);
+        if (travelled_index == routePoints.size()-1) {
+            return;
+        }
 
-            for (;(Geo.distance(current_position, intermediate_point) < checking_distance) && (intermediate_multiplier < 1);
-                 intermediate_multiplier += SUBSTEP_PERCENT) {
-                is_divided_segment_changed = true;
-                intermediate_point = new Vector(routePoints.get(travelled_index),routePoints.get(travelled_index+1)).getPointByMultiplier(intermediate_multiplier);
-            }
-            if (is_divided_segment_changed){
-                if (is_last_segment_divided) {
-                    travelled_path -= Geo.distance(routePoints.get(travelled_index),routePoints.get(travelled_index-1));
-                    routePoints.remove(travelled_index);
-                    System.out.println("removed by sub");
-                } else {
-                    travelled_index++;
-                }
-                routePoints.add(travelled_index,intermediate_point);
-                travelled_path += Geo.distance(routePoints.get(travelled_index),routePoints.get(travelled_index-1));
+        Point intermediate_point = new Vector(routePoints.get(travelled_index),routePoints.get(travelled_index+1)).getPointByMultiplier(intermediate_multiplier);
+        boolean is_divided_segment_changed = false;
+        for (;(getDistance(current_position, intermediate_point) < checking_distance) && (intermediate_multiplier < 1);
+        intermediate_multiplier += SUBSTEP_PERCENT) {
+            is_divided_segment_changed = true;
+            intermediate_point = new Vector(routePoints.get(travelled_index),routePoints.get(travelled_index+1)).getPointByMultiplier(intermediate_multiplier);
+        }
 
-                is_last_segment_divided = true;
-                is_divided_segment_changed = false;
+        if (is_divided_segment_changed){
+            travelled_path += getDistance(routePoints.get(travelled_index),intermediate_point);
+
+            if (is_last_segment_divided) {
+                routePoints.remove(travelled_index);
+            } else {
+                travelled_index++;
             }
+
+            routePoints.add(travelled_index,intermediate_point);
+            is_last_segment_divided = true;
         }
     }
 
 
 
-
     public void clear(){
+        resetTravelledPath(false);
         map_object_collection.clear();
         routePoints.clear();
         route = null;
         path = 0;
         is_temporary_last = false;
-        travelled_index = 0;
-        travelled_path = 0;
         update();
     }
-    public void resetWalkedPath(){
+    public void resetTravelledPath(boolean requiredUpdate){
         travelled_index = 0;
         travelled_path = 0;
-        updateViewValues();
+        if (is_last_segment_divided) {
+            routePoints.remove(travelled_index);
+            is_last_segment_divided = false;
+        }
+        if (requiredUpdate){
+            update();
+        }
+    }
+    public void resetTravelledPath(){
+        resetTravelledPath(true);
     }
     public void setMinRealStep(double min_real_step){
         this.min_real_step = min_real_step;
