@@ -214,12 +214,12 @@ public class Controller {
     private void setFingerDrawMode(){
         map_sensor.show();
         line_drawer.setMinRealStep(5);
-        line_drawer.setDivisionStep(10);
+        line_drawer.setDivisionStep(5);
         location_sensor.setDrawable(false);
     }
     private void setNavigatorDrawMode(){
         line_drawer.setMinRealStep(4);
-        line_drawer.setDivisionStep(8);
+        line_drawer.setDivisionStep(5);
         location_sensor.setDrawable(true);
         map_sensor.hide();
     }

@@ -104,7 +104,7 @@ public class LocationSensor{
     }
     private void addPoint(){
 
-        Point lastDrewPoint = line_drawer.getLastPoint();
+        Point lastDrewPoint = line_drawer.getRoute().getLastPoint();
         if (lastDrewPoint != null) {
             if (Geo.distance(lastDrewPoint, last_locations.getLastPoint()) > last_locations.getLastAccuracy())
                 line_drawer.buildToPoint(last_locations.getLastPoint(),false);
