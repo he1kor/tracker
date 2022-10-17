@@ -28,7 +28,7 @@ public class Route {
     private final double MIN_UNSEEN_STEP = 0.00000001;
     private final double WALKED_ACCURACY = 100;
     private final double SUBSTEP_PERCENT = 0.02;
-    private double min_real_step;
+    private double max_remove_distance;
 
     public Route(){
         path = 0;
@@ -43,6 +43,7 @@ public class Route {
     public void setDivisionStep(int division_step,int limit_points) {
         this.division_step = division_step;
         max_iterations = limit_points;
+        max_remove_distance = ((double) division_step) / 1.5;
     }
 
 
@@ -99,10 +100,10 @@ public class Route {
     }
     private void addPointsLine(Point point,Point last_point){
         double iterations = Vector.steps(last_point, point, division_step);
-        System.out.println(iterations);
         double longitude_step = Vector.toLongitudeStep(last_point, point, division_step);
         double latitude_step = Vector.toLatitudeStep(last_point, point, division_step);
 
+        System.out.println(Math.floor(iterations));
         for (int i = 0; i < Math.floor(iterations) && i < max_iterations; i++) {
             Point new_point = new Point(
                     routePoints.get(routePoints.size()-1).getLatitude() + latitude_step,
@@ -113,13 +114,19 @@ public class Route {
     protected void buildToPoint(Point point){
         if (routePoints.size() == 0){
             addFirstPoint(point);
-        } else {
-            Point last_point = routePoints.get(routePoints.size()-1);
-            double distance = getDistance(point,last_point);
-            if (distance > division_step){
-                addPointsLine(point,last_point);
-            }
+            System.out.println("first " + size());
+            return;
         }
+        Point last_point = getLastPoint();
+        if (getDistance(point,last_point) <= max_remove_distance && size() >= 3){
+            removeFrontPoint();
+            last_point = getLastPoint();
+        }
+        double distance = getDistance(point,last_point);
+        if (distance > division_step){
+            addPointsLine(point,last_point);
+        }
+        System.out.println(size());
     }
 
 
@@ -130,7 +137,7 @@ public class Route {
         is_last_segment_divided = false;
     }
 
-    private void addWholeStep(){
+    private void travelWholeStep(){
         travelled_path += getDistance(travelled_index,travelled_index+1);
         if (is_last_segment_divided) {
             removeDividedPoint();
@@ -138,7 +145,7 @@ public class Route {
             travelled_index++;
         }
     }
-    private void addSubStep(Point intermediate_point){
+    private void travelSubStep(Point intermediate_point){
         travelled_path += getDistance(routePoints.get(travelled_index),intermediate_point);
 
         if (is_last_segment_divided) {
@@ -156,7 +163,7 @@ public class Route {
         int possible_indexes_amount = (int) Math.min(WALKED_ACCURACY, routePoints.size()-travelled_index-1);
         for (int i = 0; (i < possible_indexes_amount); i++) {
             if (getDistance(current_position, routePoints.get(travelled_index+1)) < checking_distance) {
-                addWholeStep();
+                travelWholeStep();
             }
         }
     }
@@ -173,7 +180,7 @@ public class Route {
             intermediate_point = new Vector(routePoints.get(travelled_index),routePoints.get(travelled_index+1)).getPointByMultiplier(intermediate_multiplier);
         }
         if (is_divided_segment_changed){
-            addSubStep(intermediate_point);
+            travelSubStep(intermediate_point);
         }
     }
 
@@ -191,9 +198,6 @@ public class Route {
             is_last_segment_divided = false;
             intermediate_multiplier = 0;
         }
-    }
-    public void setMinRealStep(double min_real_step){
-        this.min_real_step = min_real_step;
     }
 
     public Point getLastPoint() {

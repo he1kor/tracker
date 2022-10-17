@@ -1,6 +1,8 @@
 package com.helkor.project.draw;
 
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.helkor.project.global.Controller;
@@ -59,12 +61,10 @@ public class LocationSensor{
     }
 
     private void Listener() {
-        System.out.println("listener");
         location_manager = map_kit.createLocationManager();
         location_listener = new LocationListener() {
             @Override
             public void onLocationUpdated(@NonNull Location location) {
-                System.out.println("updated");
                 last_locations.add(location);
                 if (is_walkable) {
                     line_drawer.checkForTravelled(location.getPosition(),location.getAccuracy());
@@ -85,9 +85,8 @@ public class LocationSensor{
             @Override
             public void onLocationStatusUpdated(@NonNull LocationStatus locationStatus) {
                 if (locationStatus == LocationStatus.NOT_AVAILABLE) {
-                    System.out.println("Location Status is not available.");
+                    Log.i("LocationListener: ","Location Status is not available.");
                 }
-                System.out.println(locationStatus.toString() + " status");
             }
         };
         subscribeToLocationUpdate();

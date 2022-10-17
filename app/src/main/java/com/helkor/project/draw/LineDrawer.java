@@ -85,7 +85,6 @@ public class LineDrawer {
         }
     }
     public void buildToPoint(Point point, boolean is_temporary){
-        tryRemoveTemporaryPoint();
         this.is_temporary_last = is_temporary;
         route.buildToPoint(point);
         update();
@@ -121,9 +120,6 @@ public class LineDrawer {
     }
     public void resetTravelledPath(){
         resetTravelledPath(true);
-    }
-    public void setMinRealStep(double min_real_step){
-        route.setMinRealStep(min_real_step);
     }
 
     public void setDivisionStep(int division_step) {
