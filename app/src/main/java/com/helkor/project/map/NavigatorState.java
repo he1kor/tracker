@@ -20,17 +20,13 @@ import com.yandex.runtime.image.ImageProvider;
 
 public class NavigatorState implements UserLocationObjectListener{
 
-    private final Controller controller;
-
     Activity activity;
-    private UserLocationView user_location_view;
     private UserLocationLayer user_location_layer;
     private MapKit map_kit;
 
     public NavigatorState(Controller controller, MapState map_state){
 
-        this.controller = controller;
-        activity = controller.getActivity();
+        activity = controller.getMainActivity();
 
         map_kit = MapKitFactory.getInstance();
         user_location_layer = map_kit.createUserLocationLayer(map_state.getMapWindow());
@@ -39,7 +35,6 @@ public class NavigatorState implements UserLocationObjectListener{
     }
 
     public void init(UserLocationView userLocationView){
-        user_location_view = userLocationView;
 
         CompositeIcon ArrowIcon = userLocationView.getArrow().useCompositeIcon();
         ArrowIcon.setIcon(

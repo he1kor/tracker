@@ -32,7 +32,7 @@ public class TouchSensor {
     public TouchSensor(Controller controller, int id, MapState map_state, LineDrawer line_drawer) {
 
         this.controller = controller;
-        Activity activity = controller.getActivity();
+        Activity activity = controller.getMainActivity();
 
         this.drawable_relative = activity.findViewById(id);
         drawable_relative.setVisibility(View.INVISIBLE); 

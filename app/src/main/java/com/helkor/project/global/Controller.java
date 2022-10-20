@@ -1,10 +1,13 @@
 package com.helkor.project.global;
 
+import android.Manifest;
 import android.app.Activity;
 import android.widget.TextView;
 
 
 import com.helkor.project.R;
+import com.helkor.project.activities.MainActivity;
+import com.helkor.project.activities.util.LocationPermissionResult;
 import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.buttons.ButtonSwitchDraw;
 import com.helkor.project.draw.LineDrawer;
@@ -16,13 +19,15 @@ import com.helkor.project.map.MapState;
 import com.helkor.project.map.NavigatorState;
 import com.yandex.mapkit.MapKit;
 
+import java.security.Permission;
+
 public class Controller {
 
-    public Activity getActivity() {
-        return activity;
+    public Activity getMainActivity() {
+        return main_activity;
     }
 
-    private Activity activity;
+    private MainActivity main_activity;
     private MapKit map_kit;
 
     private MapState map_state;
@@ -39,14 +44,13 @@ public class Controller {
 
     private final float COMFORTABLE_ZOOM_LEVEL = 18.5f;
 
-    public Controller(Activity activity,MapKit map_kit){
-        this.activity = activity;
+    public Controller(MainActivity activity,MapKit map_kit){
+        this.main_activity = activity;
         this.map_kit = map_kit;
-        setup();
+        map_state = new MapState(this,map_kit);
     }
 
     public void setup(){
-        map_state = new MapState(this,map_kit,R.id.map);
 
         line_drawer = new LineDrawer(this,map_state);
         location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer,map_kit);
@@ -56,16 +60,16 @@ public class Controller {
     }
 
     public void test(String text){
-        TextView test = activity.findViewById(R.id.test_text);
+        TextView test = main_activity.findViewById(R.id.test_text);
         test.setText(text);
     }
 
     public void initButtons (){
         System.out.println("showing");
         map_state.show();
-        Background.vanishing(activity);
-        Bar.setActivity(activity);
-        Bar.animateColor(activity.getColor(R.color.black),activity.getColor(R.color.light_red),2000);
+        Background.vanishing(main_activity);
+        Bar.setActivity(main_activity);
+        Bar.animateColor(main_activity.getColor(R.color.black),main_activity.getColor(R.color.light_red),2000);
 
         button_start = new ButtonStart(this,R.id.button_start);
         button_switch_draw = new ButtonSwitchDraw(this,R.id.button_switch_draw);

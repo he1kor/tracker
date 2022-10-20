@@ -25,18 +25,15 @@ public class MapState {
     private MapKit map_kit;
     private MapObjectCollection map_object_collection;
 
-    private LocationManager location_manager;
 
-    public MapState(Controller controller, MapKit map_kit, int id){
-
+    public MapState(Controller controller, MapKit map_kit){
         this.controller = controller;
-        activity = controller.getActivity();
+        activity = controller.getMainActivity();
 
         this.map_kit = map_kit;
         map_view = activity.findViewById(R.id.map);
         map_window = map_view.getMapWindow();
         map = map_view.getMap();
-        location_manager = map_kit.createLocationManager();
         map_object_collection = map.getMapObjects();
         init();
     }
@@ -44,11 +41,11 @@ public class MapState {
     public void onStop() {
         map_view.onStop();
         map_kit.onStop();
+        System.out.println("mapkit stopped");
     }
     public void onStart(LocationSensor location_sensor) {
         map_kit.onStart();
         map_view.onStart();
-        //location_sensor.subscribeToLocationUpdate();
     }
 
     private void init(){
@@ -58,11 +55,12 @@ public class MapState {
         map_view.getMap().setMapType(MapType.VECTOR_MAP);
         map_view.getMap().setModelsEnabled(true);
         map_view.getMap().set2DMode(false);
-
+        System.out.println(map_view.getVisibility() + " is visibility of map");
     }
 
     public void show(){
         map_view.setVisibility(View.VISIBLE);
+        System.out.println(map_view.getVisibility() + " is visibility of map");
     }
     public void hide(){
         map_view.setVisibility(View.INVISIBLE);

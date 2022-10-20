@@ -1,8 +1,11 @@
 package com.helkor.project.draw;
 
 
+import android.Manifest;
 import android.util.Log;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.helkor.project.global.Controller;
@@ -53,7 +56,6 @@ public class LocationSensor{
         this.COMFORTABLE_ZOOM_LEVEL = COMFORTABLE_ZOOM_LEVEL;
         this.line_drawer = line_drawer;
         last_locations = new ShortLocationArray(MAX_CHECK_LINE);
-
         Listener();
     }
     private void setLocation(Location location){

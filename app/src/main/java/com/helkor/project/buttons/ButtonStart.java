@@ -34,7 +34,7 @@ public class ButtonStart {
 
     public ButtonStart(Controller controller, int button_start_id) {
         this.controller = controller;
-        activity = controller.getActivity();
+        activity = controller.getMainActivity();
 
         int_path = 0;
         int_traveled_path = 0;
@@ -42,7 +42,6 @@ public class ButtonStart {
         time_after_hold = -100;
         button_start = activity.findViewById(button_start_id);
         button_start.setVisibility(View.INVISIBLE);
-        this.activity = activity;
 
         Listener();
     }

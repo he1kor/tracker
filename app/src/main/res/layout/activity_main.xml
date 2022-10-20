@@ -48,6 +48,7 @@
         android:padding="15dp"
         android:textAlignment="center"
         android:textAllCaps="false"
+        android:textColor="#FFFFFF"
         android:textSize="28sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"

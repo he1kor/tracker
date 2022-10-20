@@ -28,12 +28,11 @@ public class ButtonSwitchDraw {
     public ButtonSwitchDraw(Controller controller, int button_switch_draw_id){
 
         this.controller = controller;
-        activity = controller.getActivity();
+        activity = controller.getMainActivity();
 
         button_variant = 0;
         button_switch_draw = activity.findViewById(button_switch_draw_id);
         button_switch_draw.setVisibility(View.INVISIBLE);
-        this.activity = activity;
         listener();
         updateView();
     }

@@ -2,4 +2,8 @@
     <string name="app_name">Tracker</string>
     <string name="button_variant_1">Start</string>
     <string name="button_variant_2">Clear</string>
+
+    <string name="ask_for_settings_message">The Tracker application is based on following a route using geolocation. Unfortunately, for the application to work, you need to go to the settings and give permission to use precise geolocation.</string>
+    <string name="ask_for_settings_accept">Settings</string>
+    <string name="ask_for_settings_reject">Exit app</string>
 </resources>
