@@ -24,13 +24,21 @@ import com.helkor.project.graphics.Bar;
 public class ButtonStart {
     private final Controller controller;
 
-    private Activity activity;
+    private final Activity activity;
+    private final Button button_start;
+    private Variant button_variant;
     private boolean isOnHold = false;
-    private short button_variant;
     private long time_after_hold;
-    private Button button_start;
     private int int_path;
     private int int_traveled_path;
+
+    public enum Variant{
+        MAIN,
+        DRAW,
+        WALK,
+        PAUSE,
+        FINISH
+    }
 
     public ButtonStart(Controller controller, int button_start_id) {
         this.controller = controller;
@@ -38,7 +46,7 @@ public class ButtonStart {
 
         int_path = 0;
         int_traveled_path = 0;
-        button_variant = -1;
+        button_variant = Variant.MAIN;
         time_after_hold = -100;
         button_start = activity.findViewById(button_start_id);
         button_start.setVisibility(View.INVISIBLE);
@@ -80,31 +88,31 @@ public class ButtonStart {
     }
     private void updateView(){
         switch (button_variant) {
-            case (0):
+            case MAIN:
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_1));
                 setText(HtmlCompat.fromHtml("<b><big>" + "Start" + "</big></b>" +  "<br />" +
                         "<small>" + int_path + " m" + "</small>",HtmlCompat.FROM_HTML_MODE_COMPACT));
                 Bar.setColor(R.color.light_red);
                 break;
-            case (1):
+            case DRAW:
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_2));
                 setText(HtmlCompat.fromHtml("<b><big>" + "Clear" + "</big></b>" +  "<br />" +
                         "<small>" + int_path + "m" + "</small>",HtmlCompat.FROM_HTML_MODE_COMPACT));
                 Bar.setColor(R.color.lilac);
                 break;
-            case (2):
+            case WALK:
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_4));
                 setText(HtmlCompat.fromHtml("<b><big>" + "Pause" + "</big></b>" +  "<br />" +
                         "<small>" + int_traveled_path + " m /" + "<br />" + int_path + " m" + "</small>",HtmlCompat.FROM_HTML_MODE_COMPACT));
                 Bar.setColor(R.color.green);
                 break;
-            case (3):
+            case PAUSE:
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_3));
                 setText(HtmlCompat.fromHtml("<b><big>" + "Resume" + "</big></b>" +  "<br />" +
                         "<small>" + int_traveled_path + " m /" + "<br />" + int_path + " m" + "</small>",HtmlCompat.FROM_HTML_MODE_COMPACT));
                 Bar.setColor(R.color.yellow);
                 break;
-            case (4):
+            case FINISH:
                 button_start.setBackground(ContextCompat.getDrawable(button_start.getContext(), R.drawable.circle_variant_4));
                 setText(HtmlCompat.fromHtml("<b><medium>" + "Finished!" + "</medium></b>" +  "<br />" +
                         "<small>" + int_path + " m" + "</small>",HtmlCompat.FROM_HTML_MODE_COMPACT));
@@ -126,15 +134,15 @@ public class ButtonStart {
         button_start.setVisibility(View.VISIBLE);
         button_start.startAnimation(animation);
     }
-    public void setButtonVariant(int button_variant){
-        this.button_variant = (short)button_variant;
+    public void setButtonVariant(Variant button_variant){
+        this.button_variant = button_variant;
         updateView();
     }
     private void setText(Spanned text){
         button_start.setText(text);
     }
 
-    public short getButtonVariant() {
+    public Variant getButtonVariant() {
         return button_variant;
     }
 }

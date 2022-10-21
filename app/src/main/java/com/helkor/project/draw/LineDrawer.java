@@ -94,9 +94,11 @@ public class LineDrawer {
     }
 
     public void checkForTravelled(Point current_position, double accuracy) {
-        double checking_distance = accuracy + MIN_ADDITIONAL_ACCURACY;
-        route.checkWholeSteps(current_position,checking_distance);
-        route.checkSubSteps(current_position,checking_distance);
+        if (route.size() > 0) {
+            double checking_distance = accuracy + MIN_ADDITIONAL_ACCURACY;
+            route.checkWholeSteps(current_position, checking_distance);
+            route.checkSubSteps(current_position, checking_distance);
+        }
         update();
         checkIfFinished();
     }

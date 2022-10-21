@@ -12,29 +12,32 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
-
-import com.helkor.project.activities.MainActivity;
 import com.helkor.project.R;
+import com.helkor.project.buttons.Utils.ButtonVariant;
 import com.helkor.project.global.Controller;
-import com.helkor.project.global.YandexMapkit;
 
 public class ButtonSwitchDraw {
 
     private final Controller controller;
     Activity activity;
 
-    private short button_variant;
+    ButtonVariant<Variant> button_variant;
     private ImageButton button_switch_draw;
+
+    public enum Variant{
+        DRAW,
+        GPS
+    }
     public ButtonSwitchDraw(Controller controller, int button_switch_draw_id){
 
         this.controller = controller;
         activity = controller.getMainActivity();
-
-        button_variant = 0;
         button_switch_draw = activity.findViewById(button_switch_draw_id);
         button_switch_draw.setVisibility(View.INVISIBLE);
+        button_variant = new ButtonVariant<>(Variant.class);
         listener();
         updateView();
+        System.out.println(button_variant.toString());
     }
     void listener(){
         button_switch_draw.setOnClickListener(new View.OnClickListener() {
@@ -48,31 +51,25 @@ public class ButtonSwitchDraw {
             }
         });
     }
-    public void playAnimation(){
-        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.button_float);
-        button_switch_draw.setVisibility(View.VISIBLE);
-        button_switch_draw.startAnimation(animation);
-    }
     private void updateView(){
-        switch (button_variant) {
-            case (0):
+        switch (getButtonVariant()) {
+            case DRAW:
                 button_switch_draw.setImageResource(R.drawable.icon_draw_mode);
                 break;
-            case (1):
+            case GPS:
                 button_switch_draw.setImageResource(R.drawable.icon_gps_mode);
                 break;
         }
     }
     public void show(){
-        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button_show);
-
         button_switch_draw.setBackgroundTintList(ColorStateList.valueOf(activity.getColor(R.color.lilac)));
-
-        button_switch_draw.startAnimation(animation);
         button_switch_draw.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button_show);
+        button_switch_draw.startAnimation(animation);
     }
     public void hide(){
         Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button_hide);
+        button_switch_draw.startAnimation(animation);
 
         int colorFrom = activity.getColor(R.color.lilac);
         int colorTo = activity.getColor(R.color.light_red);
@@ -86,14 +83,14 @@ public class ButtonSwitchDraw {
 
         });
         colorAnimation.start();
-        button_switch_draw.startAnimation(animation);
         button_switch_draw.setVisibility(View.GONE);
     }
-    public void setButtonVariant(int button_variant){
-        this.button_variant = (short)button_variant;
+    public Variant nextVariant(){
+        Variant variant = button_variant.next();
         updateView();
+        return variant;
     }
-    public short getButtonVariant() {
-        return button_variant;
+    public Variant getButtonVariant() {
+        return button_variant.face();
     }
 }
