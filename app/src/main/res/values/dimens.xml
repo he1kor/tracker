@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="counter_monitor_height">60sp</dimen>
+    <dimen name="counter_monitor_width">200dp</dimen>
+    <dimen name="counter_monitor_font_size">23sp</dimen>
+    <dimen name="counter_monitor_font_height">28sp</dimen>
+</resources>

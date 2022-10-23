@@ -6,9 +6,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.text.Html;
 import android.text.Spanned;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -27,8 +25,6 @@ public class ButtonStart {
     private final Activity activity;
     private final Button button_start;
     private Variant button_variant;
-    private boolean isOnHold = false;
-    private long time_after_hold;
     private int int_path;
     private int int_traveled_path;
 
@@ -47,7 +43,6 @@ public class ButtonStart {
         int_path = 0;
         int_traveled_path = 0;
         button_variant = Variant.MAIN;
-        time_after_hold = -100;
         button_start = activity.findViewById(button_start_id);
         button_start.setVisibility(View.INVISIBLE);
 
@@ -57,33 +52,18 @@ public class ButtonStart {
     @SuppressLint("ClickableViewAccessibility")
     void Listener(){
         button_start.setOnClickListener(v -> {
-            if (!isOnHold && System.currentTimeMillis() - time_after_hold > 15 ) {
-                controller.shortMainButtonTriggered();
-            }
+            System.out.println("clicked");
+            controller.shortMainButtonTriggered();
         });
 
         button_start.setOnLongClickListener(v -> {
-            isOnHold = true;
+            System.out.println("long clicked");
             Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(80, VibrationEffect.DEFAULT_AMPLITUDE));
             }
             controller.holdMainButtonTriggered();
-            return false;
-        });
-
-        button_start.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN ) {
-                return false;
-            }
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (isOnHold) {
-                    time_after_hold = System.currentTimeMillis();
-                    isOnHold = false;
-                }
-                return false;
-            }
-            return false;
+            return true;
         });
     }
     private void updateView(){

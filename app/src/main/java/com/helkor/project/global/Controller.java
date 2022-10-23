@@ -1,6 +1,13 @@
 package com.helkor.project.global;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.helkor.project.R;
 import com.helkor.project.activities.MainActivity;
@@ -13,10 +20,12 @@ import com.helkor.project.graphics.Background;
 import com.helkor.project.graphics.Bar;
 import com.helkor.project.map.MapState;
 import com.helkor.project.map.NavigatorState;
+import com.helkor.project.monitors.CounterMonitor;
 import com.yandex.mapkit.MapKit;
 
 
 public class Controller {
+
 
     public Activity getMainActivity() {
         return main_activity;
@@ -32,6 +41,8 @@ public class Controller {
 
     private LocationSensor location_sensor;
     private TouchSensor map_sensor;
+
+    private CounterMonitor counter_monitor;
 
     private ButtonStart button_start;
     private ButtonSwitchDraw button_switch_draw;
@@ -50,6 +61,7 @@ public class Controller {
         location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer,map_kit);
         navigator_state = new NavigatorState(this,map_state);
         map_sensor = new TouchSensor(this,R.id.relative_layout_1,map_state,line_drawer);
+        counter_monitor = new CounterMonitor(main_activity,R.id.pedometer_layout_outside,R.id.pedometer_text1,R.id.pedometer_text2);
     }
 
     public void initButtons (){
@@ -75,8 +87,10 @@ public class Controller {
 
 
     public void holdMainButtonTriggered(){
+
         switch (button_start.getButtonVariant()) {
             case DRAW:
+
                 button_switch_draw.hide();
                 button_start.setButtonVariant(ButtonStart.Variant.MAIN);
                 break;
@@ -95,13 +109,16 @@ public class Controller {
     }
     public void holdMainButtonCheckout(){
         Bar.stop();
+        counter_monitor.switchModes();
         switch (button_start.getButtonVariant()) {
             case DRAW:
+
                 setDrawMode();
                 location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL,1);
                 break;
 
             case MAIN:
+
                 setCommonMode();
                 location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
                 break;
