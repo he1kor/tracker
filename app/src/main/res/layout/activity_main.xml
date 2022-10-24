@@ -43,7 +43,7 @@
                 android:id="@+id/pedometer_layout"
                 android:layout_width="@dimen/counter_monitor_width"
                 android:layout_height="match_parent"
-                android:background="@drawable/counter_background"
+                android:background="@drawable/counter_background_1"
                 android:gravity="center">
 
                 <TextView
@@ -80,8 +80,8 @@
     <androidx.appcompat.widget.AppCompatButton
 
         android:id="@+id/button_start"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="140sp"
+        android:layout_height="140sp"
         android:layout_margin="50dp"
         android:layout_marginBottom="256dp"
         android:background="@drawable/circle_variant_1"

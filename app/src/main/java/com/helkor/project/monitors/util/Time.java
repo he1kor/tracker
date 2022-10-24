@@ -10,10 +10,10 @@ public class Time {
         return seconds;
     }
     public long getAllMinutes(){
-        return seconds % 60;
+        return seconds / 60;
     }
     public long getAllHours(){
-        return getAllMinutes() % 60;
+        return getAllMinutes() / 60;
     }
 
 
@@ -29,12 +29,36 @@ public class Time {
 
 
     public long getHours(){
-        return seconds % 3600;
+        return seconds / 3600;
     }
     public long getMinutes(){
-        return (seconds - (3600 * getHours())) % 60;
+        return (seconds - (3600 * getHours())) / 60;
     }
     public long getSeconds(){
         return (seconds - (getHours() * 3600) - (getMinutes() * 60));
+    }
+
+    public static String getStringValue(int minLength,long value){
+        return String.format("%0" + Math.max(String.valueOf(value).length(),minLength) + "d", value);
+    }
+    public String getStringHours(int minLength){
+        return getStringValue(minLength,getHours());
+    }
+    public String getStringMinutes(){
+        return getStringValue(2,getMinutes());
+    }
+    public String getStringSeconds(){
+        return getStringValue(2,getSeconds());
+    }
+
+
+    @Override
+    public String toString() {
+        return
+                getStringHours(2) +
+                ":" +
+                getStringMinutes() +
+                ":" +
+                getStringSeconds();
     }
 }

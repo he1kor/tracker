@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import com.helkor.project.draw.util.Palette;
 import com.helkor.project.global.Controller;
 import com.helkor.project.map.MapState;
+import com.helkor.project.monitors.util.Timer;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.geometry.Polyline;
 import com.yandex.mapkit.map.MapObjectCollection;
@@ -24,12 +25,25 @@ public class LineDrawer {
     private final double MIN_ADDITIONAL_ACCURACY = 4;
     private final int MAX_POINTS = 500;
 
+    public interface Listener{
+        void onPathUpdated(int path);
+        void onTravelPathUpdated(int travelled_path);
+    }
+    Listener listener;
+
     @SuppressLint("HandlerLeak")
     public LineDrawer(Controller controller, MapState map_state) {
         this.controller = controller;
         map_object_collection = map_state.getMapView().getMap().getMapObjects().addCollection();
         route = new Route();
         is_temporary_last = false;
+    }
+    public void addListener(Object context){
+        try{
+            listener = (LineDrawer.Listener) context;
+        } catch (Exception e){
+            throw new RuntimeException("Couldn't add listener to context");
+        }
     }
     private void checkIfFinished(){
         if (route.getTravelledPath() == route.getPath()){
@@ -38,7 +52,8 @@ public class LineDrawer {
     }
     private void update(){
         route.removeOverlimitedPoints(MAX_POINTS);
-        updateViewValues();
+        listener.onPathUpdated((int) route.getPath());
+        listener.onTravelPathUpdated((int) route.getTravelledPath());
         if (route.size() > 0) {
             if (routePolyline != null){
                 routePolyline.setGeometry(new Polyline(route.getPoints()));
@@ -52,10 +67,6 @@ public class LineDrawer {
 
     private int getMaxSegments() {
         return MAX_POINTS + 1;
-    }
-
-    private void updateViewValues(){
-        controller.updatePathValue(route.getPath(),route.getTravelledPath());
     }
 
     private void colorize(){

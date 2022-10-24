@@ -7,50 +7,66 @@ import android.content.Context;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.helkor.project.R;
+import com.helkor.project.graphics.ColorVariable;
+import com.helkor.project.monitors.util.TwoLinesText;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class CounterMonitor {
+public class CounterMonitor extends TwoLinesText implements ColorVariable {
     private final Activity activity;
+    private final RelativeLayout relative_layout_outside;
     private final RelativeLayout relative_layout;
-    private final TextView text1;
-    private final TextView text2;
+    private final TextView top_text_view;
+    private final TextView bottom_text_view;
     private final int start_height;
-    private final int ANIMATION_DURATION = 300;
     private int height;
-    private boolean doubledLine;
+    private RowState row_state;
+    private Variant variant;
 
-    public CounterMonitor(Activity activity, int relative_id, int text1_id, int text2_id){
-        doubledLine = true;
+    private final int ANIMATION_DURATION = 300;
+    private final int LONG_ANIMATION_DURATION = 1500;
+    private final float TEXT_HEIGHT = 28f;
+
+    private enum RowState {
+        DOUBLED,
+        ONE,
+        ZERO
+    }
+
+    public CounterMonitor(Activity activity, int relative_id_outside, int relative_id, int text1_id, int text2_id){
         this.activity = activity;
+        relative_layout_outside = activity.findViewById(relative_id_outside);
         relative_layout = activity.findViewById(relative_id);
-        text1 = activity.findViewById(text1_id);
-        text2 = activity.findViewById(text2_id);
+        top_text_view = activity.findViewById(text1_id);
+        bottom_text_view = activity.findViewById(text2_id);
         start_height = (int) activity.getResources().getDimension(R.dimen.counter_monitor_height);
         height = start_height;
+        hide();
     }
-    @SuppressLint("SetTextI18n")
-    public void setFirstLineText(String text){
-        text1.setText(text + (doubledLine ? "\n" : ""));
+    @Override
+    public void setTopText(String text) {
+        if (row_state != RowState.DOUBLED) throw new RuntimeException("Second line is not available");
+        super.setTopText(text);
+        top_text_view.setText(text);
     }
-    @SuppressLint("SetTextI18n")
-    public void setSecondLineText(String text){
-        if (!doubledLine) throw new RuntimeException("Second line is not available");
-        text2.setText("\n" + text);
+
+    @Override
+    public void setBottomText(String text) {
+        super.setTopText(text);
+        bottom_text_view.setText(text);
     }
-    public void setHeight(int height){
-        System.out.println(height);
-        System.out.println(start_height);
-        this.height = height;
-        relative_layout.getLayoutParams().height = height;
-        relative_layout.requestLayout();
+    public void setHeight(int px){
+        this.height = px;
+        relative_layout_outside.getLayoutParams().height = px;
+        relative_layout_outside.requestLayout();
     }
     public static int spToPx(float sp, Context context) {
-        System.out.println("sp: " + sp);
-        System.out.println("px:  " + TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics()));
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
     }
     public void setMarginTop(View view,float sp){
@@ -58,60 +74,177 @@ public class CounterMonitor {
         layoutParams.topMargin = spToPx(sp,activity);
     }
     public void switchModes(){
-        if (doubledLine) {
-            animateDecreasing();
-        } else {
-            animateExtension();
+        switch (row_state) {
+            case DOUBLED:
+                animateDecreasing();
+                break;
+            case ONE:
+                animateExtension();
+                break;
+            case ZERO:
+                animateAppearing();
+                break;
         }
-        doubledLine = !doubledLine;
     }
-    private void animateDecreasing(){
+    public void animateAppearing(){
+        hide();
+        row_state = RowState.ONE;
+        animateTextAppearing();
+        animateLayoutAppearing();
+    }
+    public void animateDecreasing(){
+        extend();
+        row_state = RowState.ONE;
         animateTextDecreasing();
         animateLayoutDecreasing();
     }
-    private void animateExtension(){
+    public void animateExtension(){
+        decrease();
+        row_state = RowState.DOUBLED;
         animateTextExtension();
         animateLayoutExtension();
     }
-    private void animateTextExtension(){
-        ValueAnimator animator = ValueAnimator.ofFloat(0f,28.0f);
-        animator.setDuration(ANIMATION_DURATION);
+    private void hide(){
+        top_text_view.setAlpha(0f);
+        bottom_text_view.setAlpha(0f);
+        setMarginTop(top_text_view,-TEXT_HEIGHT);
+        setMarginTop(bottom_text_view,-TEXT_HEIGHT);
+        setHeight(0);
+    }
+    private void extend(){
+        top_text_view.setAlpha(1f);
+        setMarginTop(top_text_view, 0);
+        setMarginTop(bottom_text_view,TEXT_HEIGHT);
+        setHeight(start_height);
+    }
+    private void decrease(){
+        top_text_view.setAlpha(0f);
+        setMarginTop(top_text_view, -TEXT_HEIGHT);
+        setMarginTop(bottom_text_view,0f);
+        setHeight(start_height - spToPx(TEXT_HEIGHT,activity));
+    }
+    private void animateTextAppearing(){
+        AtomicBoolean is_stopping = new AtomicBoolean(false);
+
+        ValueAnimator animator = ValueAnimator.ofFloat(0f,TEXT_HEIGHT);
+        animator.setDuration(LONG_ANIMATION_DURATION);
         animator.addUpdateListener(valueAnimator -> {
-            text1.setAlpha((float) valueAnimator.getAnimatedValue() / 28);
-            setMarginTop(text1, -28 + (Float) valueAnimator.getAnimatedValue());
-            setMarginTop(text2,(Float) valueAnimator.getAnimatedValue());
+            if (row_state != RowState.ONE && !is_stopping.get()) {
+                is_stopping.set(true);
+                animator.end();
+            }
+            bottom_text_view.setAlpha((float) valueAnimator.getAnimatedValue() / TEXT_HEIGHT);
+            setMarginTop(bottom_text_view,-TEXT_HEIGHT + (float) valueAnimator.getAnimatedValue());
+        });
+        animator.setInterpolator(new AccelerateInterpolator());
+        animator.start();
+    }
+    private void animateLayoutAppearing(){
+        AtomicBoolean is_stopping = new AtomicBoolean(false);
+
+        ValueAnimator animator = ValueAnimator.ofFloat(0f,start_height - spToPx(TEXT_HEIGHT,activity));
+        animator.setDuration(LONG_ANIMATION_DURATION);
+        animator.addUpdateListener(valueAnimator -> {
+            if (row_state != RowState.ONE && !is_stopping.get()) {
+                is_stopping.set(true);
+                animator.end();
+            }
+            setHeight((int) (float) valueAnimator.getAnimatedValue());
         });
         animator.start();
     }
-    private void animateTextDecreasing(){
-        ValueAnimator animator = ValueAnimator.ofFloat(28.0f,0.0f);
+    private void animateTextExtension(){
+        AtomicBoolean is_stopping = new AtomicBoolean(false);
+
+        ValueAnimator animator = ValueAnimator.ofFloat(0f,TEXT_HEIGHT);
         animator.setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(valueAnimator -> {
-            text1.setAlpha((float) valueAnimator.getAnimatedValue() / 28);
-            setMarginTop(text1, -28 + (Float) valueAnimator.getAnimatedValue());
-            setMarginTop(text2,(Float) valueAnimator.getAnimatedValue());
+            if (row_state != RowState.DOUBLED && !is_stopping.get()) {
+                is_stopping.set(true);
+                animator.end();
+            }
+            top_text_view.setAlpha((float) valueAnimator.getAnimatedValue() / TEXT_HEIGHT);
+            setMarginTop(top_text_view, -TEXT_HEIGHT + (float) valueAnimator.getAnimatedValue());
+            setMarginTop(bottom_text_view,(float) valueAnimator.getAnimatedValue());
         });
         animator.start();
     }
     private void animateLayoutExtension(){
-        ValueAnimator animator = ValueAnimator.ofFloat(28.0f,0.0f);
+        AtomicBoolean is_stopping = new AtomicBoolean(false);
+
+        ValueAnimator animator = ValueAnimator.ofFloat(TEXT_HEIGHT,0.0f);
         animator.setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(valueAnimator -> {
+            if (row_state != RowState.DOUBLED && !is_stopping.get()) {
+                is_stopping.set(true);
+                animator.end();
+            }
+            setHeight(start_height - spToPx((float) valueAnimator.getAnimatedValue(),activity));
+        });
+        animator.start();
+    }
+    private void animateTextDecreasing(){
+        AtomicBoolean is_stopping = new AtomicBoolean(false);
 
-            setHeight((int) (start_height - spToPx((float) valueAnimator.getAnimatedValue(),activity)));
+        ValueAnimator animator = ValueAnimator.ofFloat(TEXT_HEIGHT,0.0f);
+        animator.setDuration(ANIMATION_DURATION);
+        animator.addUpdateListener(valueAnimator -> {
+            if (row_state != RowState.ONE && !is_stopping.get()) {
+                is_stopping.set(true);
+                animator.end();
+            }
+            top_text_view.setAlpha((float) valueAnimator.getAnimatedValue() / TEXT_HEIGHT);
+            setMarginTop(top_text_view, -TEXT_HEIGHT + (float) valueAnimator.getAnimatedValue());
+            setMarginTop(bottom_text_view,(float) valueAnimator.getAnimatedValue());
         });
         animator.start();
     }
     private void animateLayoutDecreasing(){
-        ValueAnimator animator = ValueAnimator.ofFloat(0f,28.0f);
+        AtomicBoolean is_stopping = new AtomicBoolean(false);
+
+        ValueAnimator animator = ValueAnimator.ofFloat(0f,TEXT_HEIGHT);
         animator.setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(valueAnimator -> {
-
-            setHeight((int) (start_height - spToPx((float) valueAnimator.getAnimatedValue(),activity)));
+            if (row_state != RowState.ONE && !is_stopping.get()) {
+                is_stopping.set(true);
+                animator.end();
+            }
+            setHeight(start_height - spToPx((float) valueAnimator.getAnimatedValue(),activity));
         });
         animator.start();
     }
     public int getHeight(){
         return height;
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Override
+    public void updateView() {
+        switch (variant){
+            case MAIN:
+                relative_layout.setBackground(activity.getDrawable(R.drawable.counter_background_1));
+                break;
+            case DRAW:
+                relative_layout.setBackground(activity.getDrawable(R.drawable.counter_background_2));
+                break;
+            case PAUSE:
+                relative_layout.setBackground(activity.getDrawable(R.drawable.counter_background_3));
+                break;
+            case WALK:
+            case FINISH:
+                relative_layout.setBackground(activity.getDrawable(R.drawable.counter_background_4));
+                break;
+        }
+    }
+
+    @Override
+    public void setVariant(Variant variant) {
+        this.variant = variant;
+        updateView();
+    }
+
+    @Override
+    public Variant getVariant() {
+        return variant;
     }
 }
