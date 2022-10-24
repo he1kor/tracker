@@ -227,6 +227,9 @@ public class CounterMonitor extends TwoLinesText implements ColorVariable {
             case DRAW:
                 relative_layout.setBackground(activity.getDrawable(R.drawable.counter_background_2));
                 break;
+            case VIEW:
+                relative_layout.setBackground(activity.getDrawable(R.drawable.counter_background_3));
+                break;
             case PAUSE:
                 relative_layout.setBackground(activity.getDrawable(R.drawable.counter_background_3));
                 break;

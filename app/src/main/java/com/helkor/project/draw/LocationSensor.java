@@ -45,7 +45,7 @@ public class LocationSensor{
 
     private LocationManager location_manager;
 
-    private Point myLocation;
+    private Point my_location;
     public LocationSensor(Controller controller, MapState map_state, float COMFORTABLE_ZOOM_LEVEL, LineDrawer line_drawer, MapKit map_kit){
 
         this.controller = controller;
@@ -74,14 +74,14 @@ public class LocationSensor{
                 if (is_drawable && last_locations.size() == MAX_CHECK_LINE) {
                     addPoint();
                 }
-                if (myLocation == null) {
+                if (my_location == null) {
                     firstMoveCamera(location.getPosition(), 16.25f);
                 }
                 if (expecting_location) {
                     moveCamera(location.getPosition(), expecting_zoom,1);
                     setExpectingLocation(false);
                 }
-                myLocation = location.getPosition();
+                my_location = location.getPosition();
             }
 
             @Override
@@ -94,14 +94,15 @@ public class LocationSensor{
         subscribeToLocationUpdate();
     }
     public void subscribeToLocationUpdate() {
-        if (location_manager != null && location_listener != null) {
-            double DESIRED_ACCURACY = 0;
-            long MINIMAL_TIME = 0;
-            double MINIMAL_DISTANCE = 0.5;
-            boolean USE_IN_BACKGROUND = false;
-            location_manager.subscribeForLocationUpdates(DESIRED_ACCURACY, MINIMAL_TIME,
-                    MINIMAL_DISTANCE, USE_IN_BACKGROUND, FilteringMode.OFF, location_listener);
-        }
+        double DESIRED_ACCURACY = 0;
+        long MINIMAL_TIME = 0;
+        double MINIMAL_DISTANCE = 0.5;
+        boolean USE_IN_BACKGROUND = false;
+        location_manager.subscribeForLocationUpdates(DESIRED_ACCURACY, MINIMAL_TIME,
+                MINIMAL_DISTANCE, USE_IN_BACKGROUND, FilteringMode.OFF, location_listener);
+    }
+    public void unSubscribeToLocationUpdate(){
+        location_manager.unsubscribe(location_listener);
     }
     private void addPoint(){
 
@@ -154,7 +155,7 @@ public class LocationSensor{
         return expecting_location;
     }
     public Point getMyLocation() {
-        return myLocation;
+        return my_location;
     }
 
     public boolean isDrawable() {

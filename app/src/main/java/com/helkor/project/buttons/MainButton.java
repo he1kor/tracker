@@ -6,6 +6,7 @@ import android.app.Activity;
 import androidx.core.content.ContextCompat;
 
 import com.helkor.project.R;
+import com.helkor.project.buttons.Utils.BigButton;
 import com.helkor.project.graphics.Bar;
 import com.helkor.project.graphics.ColorVariable;
 
@@ -30,8 +31,14 @@ public class MainButton extends BigButton implements ColorVariable{
             case DRAW:
                 button_view.setBackground(ContextCompat.getDrawable(button_view.getContext(), R.drawable.circle_variant_2));
                 button_view.setTextSize(38);
-                button_view.setText("Clear");
+                button_view.setText("View");
                 Bar.setColor(R.color.lilac);
+                break;
+            case VIEW:
+                button_view.setBackground(ContextCompat.getDrawable(button_view.getContext(), R.drawable.circle_variant_3));
+                button_view.setTextSize(38);
+                button_view.setText("Draw");
+                Bar.setColor(R.color.yellow);
                 break;
             case WALK:
                 button_view.setBackground(ContextCompat.getDrawable(button_view.getContext(), R.drawable.circle_variant_4));

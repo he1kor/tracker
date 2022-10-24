@@ -4,6 +4,7 @@ public interface ColorVariable {
     public enum Variant{
         MAIN,
         DRAW,
+        VIEW,
         WALK,
         PAUSE,
         FINISH

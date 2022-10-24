@@ -54,10 +54,10 @@ public class TouchSensor {
             }
         });
     }
-    public void show(){
+    public void turnOn(){
         drawable_relative.setVisibility(View.VISIBLE);
     }
-    public void hide(){
+    public void turnOff(){
         drawable_relative.setVisibility(View.INVISIBLE);
     }
 }

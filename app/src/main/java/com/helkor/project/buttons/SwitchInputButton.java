@@ -8,16 +8,20 @@ import android.view.View;
 import android.widget.ImageButton;
 import com.helkor.project.R;
 import com.helkor.project.buttons.Utils.ButtonVariant;
+import com.helkor.project.buttons.Utils.HideToColor;
+import com.helkor.project.buttons.Utils.LittleButton;
 
-import java.util.Objects;
 
 public class SwitchInputButton extends LittleButton {
 
     ButtonVariant<Variant> button_variant;
     private final ImageButton button_view;
 
+    ValueAnimator colorAnimation;
+
     private final int COLOR_MAIN;
     private final int COLOR_DRAW;
+    private final int COLOR_VIEW;
     private final long ANIMATION_DURATION = 500;
 
     public enum Variant{
@@ -31,6 +35,7 @@ public class SwitchInputButton extends LittleButton {
         button_variant = new ButtonVariant<>(Variant.class);
         COLOR_MAIN = activity.getColor(R.color.light_red);
         COLOR_DRAW = activity.getColor(R.color.lilac);
+        COLOR_VIEW = activity.getColor(R.color.yellow);
         updateView();
     }
     private void updateView(){
@@ -45,6 +50,7 @@ public class SwitchInputButton extends LittleButton {
     }
     @Override
     public void show(){
+        if (colorAnimation != null && colorAnimation.isRunning()) colorAnimation.cancel();
         button_view.setVisibility(View.VISIBLE);
         button_view.setBackgroundTintList(ColorStateList.valueOf(COLOR_DRAW));
         button_view.startAnimation(button_show_animation);
@@ -52,8 +58,21 @@ public class SwitchInputButton extends LittleButton {
     @Override
     public void hide(){
         button_view.startAnimation(button_hide_animation);
-
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), COLOR_DRAW, COLOR_MAIN);
+        button_view.setVisibility(View.GONE);
+    }
+    private int getColor(HideToColor hide_to_color){
+        switch (hide_to_color){
+            case MAIN:
+                return COLOR_MAIN;
+            case VIEW:
+                return COLOR_VIEW;
+        }
+        throw new RuntimeException("Unknown color");
+    }
+    public void hideWithColor(HideToColor hide_to_color){
+        int color_to = getColor(hide_to_color);
+        hide();
+        colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), COLOR_DRAW, color_to);
         colorAnimation.setDuration(ANIMATION_DURATION);
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(){
             @Override
@@ -63,7 +82,6 @@ public class SwitchInputButton extends LittleButton {
 
         });
         colorAnimation.start();
-        button_view.setVisibility(View.GONE);
     }
     public Variant nextVariant(){
         Variant variant = button_variant.next();

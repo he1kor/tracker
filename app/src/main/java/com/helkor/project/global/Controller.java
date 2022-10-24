@@ -15,8 +15,9 @@ import com.helkor.project.R;
 import com.helkor.project.activities.MainActivity;
 import com.helkor.project.buttons.ClearButton;
 import com.helkor.project.buttons.SwitchInputButton;
-import com.helkor.project.buttons.LittleButton;
+import com.helkor.project.buttons.Utils.LittleButton;
 import com.helkor.project.buttons.MainButton;
+import com.helkor.project.buttons.Utils.HideToColor;
 import com.helkor.project.dialogs.ClearConfirmDialogFragment;
 import com.helkor.project.draw.LineDrawer;
 import com.helkor.project.draw.LocationSensor;
@@ -59,6 +60,11 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
     private SwitchInputButton button_switch_input;
     private ClearButton button_clear;
 
+    private enum DrawMode{
+        FINGER,
+        LOCATION
+    };
+    private DrawMode draw_mode;
 
     private final float COMFORTABLE_ZOOM_LEVEL = 17.5f;
 
@@ -104,8 +110,8 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
     public void onHoldBigButton() {
         switch (main_button.getVariant()) {
             case DRAW:
-                button_switch_input.hide();
-                button_clear.hide();
+                button_switch_input.hideWithColor(HideToColor.MAIN);
+                button_clear.hideWithColor(HideToColor.MAIN);
                 break;
 
             case MAIN:
@@ -125,9 +131,11 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         Bar.stop();
         switch (main_button.getVariant()) {
             case DRAW:
-                line_drawer.clear();
+                setViewDrawMode();
                 break;
-
+            case VIEW:
+                setDrawMode();
+                break;
             case MAIN:
                 if (location_sensor.getMyLocation() == null) {
                     location_sensor.setExpectingLocation(true);
@@ -167,6 +175,7 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
                 break;
         }
     }
+
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClickLittleButton(View view) {
@@ -182,7 +191,6 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         }
 
     }
-
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         line_drawer.clear();
@@ -215,9 +223,12 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         main_button.setVariant(MainButton.Variant.MAIN);
 
         path_string.setTravelledPathEnabled(false);
-        map_sensor.hide();
+
+        map_sensor.turnOff();
         location_sensor.setDrawable(false);
         location_sensor.setWalkable(false);
+        location_sensor.unSubscribeToLocationUpdate();
+
         line_drawer.resetTravelledPath();
     }
 
@@ -229,9 +240,12 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         path_string.setTravelledPathEnabled(false);
         button_switch_input.show();
         button_clear.show();
-        location_sensor.setDrawable(true);
+        if (draw_mode == DrawMode.LOCATION){
+            setNavigatorDrawMode();
+        } else if (draw_mode == DrawMode.FINGER){
+            setFingerDrawMode();
+        }
         shortSwitchButtonCheckout();
-
     }
 
     private void setWalkingMode() {
@@ -241,6 +255,7 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
 
         path_string.setTravelledPathEnabled(true);
         location_sensor.setWalkable(true);
+        location_sensor.subscribeToLocationUpdate();
     }
 
     private void setPausedMode() {
@@ -248,6 +263,7 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         counter_monitor.setVariant(ColorVariable.Variant.PAUSE);
         main_button.setVariant(MainButton.Variant.PAUSE);
 
+        location_sensor.unSubscribeToLocationUpdate();
         location_sensor.setWalkable(false);
         timer.pause();
     }
@@ -262,6 +278,7 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         counter_monitor.setVariant(ColorVariable.Variant.FINISH);
         main_button.setVariant(MainButton.Variant.FINISH);
 
+        location_sensor.unSubscribeToLocationUpdate();
         location_sensor.setWalkable(false);
         timer.pause();
     }
@@ -269,15 +286,30 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
 
 
     private void setFingerDrawMode(){
-        map_sensor.show();
+        draw_mode = DrawMode.FINGER;
         line_drawer.setDivisionStep(4);
         location_sensor.setDrawable(false);
+        location_sensor.unSubscribeToLocationUpdate();
+        map_sensor.turnOn();
     }
 
     private void setNavigatorDrawMode(){
+        draw_mode = DrawMode.LOCATION;
         line_drawer.setDivisionStep(4);
         location_sensor.setDrawable(true);
-        map_sensor.hide();
+        location_sensor.subscribeToLocationUpdate();
+        map_sensor.turnOff();
+    }
+    private void setViewDrawMode() {
+        main_button.setVariant(ColorVariable.Variant.VIEW);
+        counter_monitor.setVariant(ColorVariable.Variant.VIEW);
+
+        button_switch_input.hideWithColor(HideToColor.VIEW);
+        button_clear.hideWithColor(HideToColor.VIEW);
+
+        location_sensor.setDrawable(false);
+        location_sensor.unSubscribeToLocationUpdate();
+        map_sensor.turnOff();
     }
 
 

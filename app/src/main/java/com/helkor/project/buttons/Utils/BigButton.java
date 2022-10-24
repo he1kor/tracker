@@ -1,4 +1,4 @@
-package com.helkor.project.buttons;
+package com.helkor.project.buttons.Utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -9,7 +9,7 @@ import android.view.animation.AnimationUtils;
 
 //Big button is holdable (with vibration effect) and clickable, can be showed and hided with animation.
 
-public class BigButton extends LittleButton{
+public class BigButton extends LittleButton {
 
     private Listener listener;
 
