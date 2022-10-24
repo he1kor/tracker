@@ -22,12 +22,13 @@ public abstract class LittleButton {
     protected final Vibrator vibrator;
 
     public interface Listener{
-        public void onClickLittleButton();
+        public void onClickLittleButton(View view);
     }
     //without button_view
     protected LittleButton(Activity activity,Object implementation_context){
         this.vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
         trySetListener(implementation_context);
+        this.hashCode();
     }
     protected LittleButton(Activity activity,Object implementation_context, int button_show_id){
         this(activity,implementation_context);
@@ -93,7 +94,7 @@ public abstract class LittleButton {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
             }
-            listener.onClickLittleButton();
+            listener.onClickLittleButton(view);
         });
     }
 

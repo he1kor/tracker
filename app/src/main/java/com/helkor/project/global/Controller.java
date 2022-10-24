@@ -1,17 +1,23 @@
 package com.helkor.project.global;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.View;
+
+import androidx.fragment.app.DialogFragment;
 
 import com.helkor.project.R;
 import com.helkor.project.activities.MainActivity;
-import com.helkor.project.buttons.ButtonSwitchDraw;
+import com.helkor.project.buttons.ClearButton;
+import com.helkor.project.buttons.SwitchInputButton;
 import com.helkor.project.buttons.LittleButton;
 import com.helkor.project.buttons.MainButton;
+import com.helkor.project.dialogs.ClearConfirmDialogFragment;
 import com.helkor.project.draw.LineDrawer;
 import com.helkor.project.draw.LocationSensor;
 import com.helkor.project.draw.TouchSensor;
@@ -27,7 +33,7 @@ import com.helkor.project.monitors.util.Timer;
 import com.yandex.mapkit.MapKit;
 
 
-public class Controller implements Timer.Listener, MainButton.Listener, LittleButton.Listener{
+public class Controller implements Timer.Listener, MainButton.Listener, LittleButton.Listener, ClearConfirmDialogFragment.Listener {
 
 
     public Activity getMainActivity() {
@@ -50,7 +56,8 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
     private PathString path_string;
 
     private MainButton main_button;
-    private ButtonSwitchDraw button_switch_draw;
+    private SwitchInputButton button_switch_input;
+    private ClearButton button_clear;
 
 
     private final float COMFORTABLE_ZOOM_LEVEL = 17.5f;
@@ -86,7 +93,8 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         main_button.setVariant(MainButton.Variant.MAIN);
         main_button.show();
 
-        button_switch_draw = new ButtonSwitchDraw(main_activity,this,R.id.button_switch_draw,R.anim.float_switch_button_show,R.anim.float_switch_button_hide);
+        button_switch_input = new SwitchInputButton(main_activity,this,R.id.button_switch_input,R.anim.switch_input_button_float_show,R.anim.switch_input_button_float_hide);
+        button_clear = new ClearButton(main_activity,this,R.id.button_clear,R.anim.clear_button_float_show,R.anim.clear_button_float_hide);
 
         setCommonMode();
         location_sensor.moveCamera(location_sensor.getMyLocation(), COMFORTABLE_ZOOM_LEVEL+1,3);
@@ -96,7 +104,8 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
     public void onHoldBigButton() {
         switch (main_button.getVariant()) {
             case DRAW:
-                button_switch_draw.hide();
+                button_switch_input.hide();
+                button_clear.hide();
                 break;
 
             case MAIN:
@@ -158,14 +167,33 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
                 break;
         }
     }
+    @SuppressLint("NonConstantResourceId")
     @Override
-    public void onClickLittleButton() {
-        button_switch_draw.nextVariant();
-        shortSwitchButtonCheckout();
+    public void onClickLittleButton(View view) {
+        switch (view.getId()){
+            case R.id.button_switch_input:
+                button_switch_input.nextVariant();
+                shortSwitchButtonCheckout();
+                break;
+            case R.id.button_clear:
+                ClearConfirmDialogFragment clear_confirm_dialog_fragment = new ClearConfirmDialogFragment(this);
+                clear_confirm_dialog_fragment.show(main_activity.getSupportFragmentManager(),"ClearConfirmDialogFragment");
+                break;
+        }
+
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        line_drawer.clear();
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
     }
 
     public void shortSwitchButtonCheckout(){
-        switch (button_switch_draw.getVariant()) {
+        switch (button_switch_input.getVariant()) {
             case GPS:
                 setNavigatorDrawMode();
                 break;
@@ -181,7 +209,6 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         counter_monitor.setTopText(time.toString());
     }
 
-
     private void setCommonMode(){
 
         counter_monitor.setVariant(ColorVariable.Variant.MAIN);
@@ -193,13 +220,15 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         location_sensor.setWalkable(false);
         line_drawer.resetTravelledPath();
     }
+
     private void setDrawMode(){
 
         counter_monitor.setVariant(ColorVariable.Variant.DRAW);
         main_button.setVariant(MainButton.Variant.DRAW);
 
         path_string.setTravelledPathEnabled(false);
-        button_switch_draw.show();
+        button_switch_input.show();
+        button_clear.show();
         location_sensor.setDrawable(true);
         shortSwitchButtonCheckout();
 

@@ -99,11 +99,11 @@
 
     <ImageButton
 
-        android:id="@+id/button_switch_draw"
+        android:id="@+id/button_switch_input"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="160dp"
+        android:layout_marginBottom="170dp"
         android:background="@drawable/circle_variant_2"
         android:padding="15dp"
         android:scaleType="centerInside"
@@ -118,11 +118,31 @@
         app:tint="#FFFFFF"
         tools:visibility="visible" />
 
+    <ImageButton
+
+        android:id="@+id/button_clear"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="270dp"
+        android:background="@drawable/circle_variant_2"
+        android:padding="13dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_trash"
+        android:textAllCaps="false"
+        android:textSize="48sp"
+        android:translationZ="95dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button_start"
+        app:tint="#FFFFFF"
+        tools:visibility="visible" />
+
     <RelativeLayout
         android:id="@+id/relative_layout_1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

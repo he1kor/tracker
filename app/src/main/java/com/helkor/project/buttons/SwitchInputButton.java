@@ -9,7 +9,9 @@ import android.widget.ImageButton;
 import com.helkor.project.R;
 import com.helkor.project.buttons.Utils.ButtonVariant;
 
-public class ButtonSwitchDraw extends LittleButton {
+import java.util.Objects;
+
+public class SwitchInputButton extends LittleButton {
 
     ButtonVariant<Variant> button_variant;
     private final ImageButton button_view;
@@ -22,7 +24,7 @@ public class ButtonSwitchDraw extends LittleButton {
         DRAW,
         GPS
     }
-    public ButtonSwitchDraw(Activity activity, Object implementation_context, int button_view_id, int button_show_id, int button_hide_id){
+    public SwitchInputButton(Activity activity, Object implementation_context, int button_view_id, int button_show_id, int button_hide_id){
         super(activity,implementation_context,button_show_id,button_hide_id);
         button_view = activity.findViewById(button_view_id);
         setOnClickListener(button_view);
