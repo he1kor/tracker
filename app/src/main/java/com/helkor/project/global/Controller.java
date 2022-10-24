@@ -1,22 +1,17 @@
 package com.helkor.project.global;
 
-import android.animation.ValueAnimator;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 
 import com.helkor.project.R;
 import com.helkor.project.activities.MainActivity;
-import com.helkor.project.buttons.ButtonStart;
 import com.helkor.project.buttons.ButtonSwitchDraw;
+import com.helkor.project.buttons.LittleButton;
+import com.helkor.project.buttons.MainButton;
 import com.helkor.project.draw.LineDrawer;
 import com.helkor.project.draw.LocationSensor;
 import com.helkor.project.draw.TouchSensor;
@@ -32,7 +27,7 @@ import com.helkor.project.monitors.util.Timer;
 import com.yandex.mapkit.MapKit;
 
 
-public class Controller implements Timer.Listener{
+public class Controller implements Timer.Listener, MainButton.Listener, LittleButton.Listener{
 
 
     public Activity getMainActivity() {
@@ -54,7 +49,7 @@ public class Controller implements Timer.Listener{
     private Timer timer;
     private PathString path_string;
 
-    private ButtonStart button_start;
+    private MainButton main_button;
     private ButtonSwitchDraw button_switch_draw;
 
 
@@ -67,17 +62,9 @@ public class Controller implements Timer.Listener{
     }
 
     public void setup(){
-        System.out.println("test");
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         counter_monitor = new CounterMonitor(main_activity,R.id.pedometer_layout_outside,R.id.pedometer_layout,R.id.pedometer_text1,R.id.pedometer_text2);
         timer = new Timer(this);
-        System.out.println("test");
         path_string = new PathString(counter_monitor, PathString.BOTTOM);
-        System.out.println("tes2");
         line_drawer = new LineDrawer(this,map_state);
         navigator_state = new NavigatorState(this,map_state);
 
@@ -95,26 +82,24 @@ public class Controller implements Timer.Listener{
 
         counter_monitor.animateAppearing();
 
-        button_start = new ButtonStart(this,R.id.button_start);
-        button_start.setVariant(ButtonStart.Variant.MAIN);
-        button_switch_draw = new ButtonSwitchDraw(this,R.id.button_switch_draw);
+        main_button = new MainButton(main_activity,this,R.id.button_start, R.anim.button_float);
+        main_button.setVariant(MainButton.Variant.MAIN);
+        main_button.show();
 
-        button_start.show();
+        button_switch_draw = new ButtonSwitchDraw(main_activity,this,R.id.button_switch_draw,R.anim.float_switch_button_show,R.anim.float_switch_button_hide);
+
         setCommonMode();
         location_sensor.moveCamera(location_sensor.getMyLocation(), COMFORTABLE_ZOOM_LEVEL+1,3);
     }
 
-
-    public void holdMainButtonTriggered(){
-
-        switch (button_start.getVariant()) {
+    @Override
+    public void onHoldBigButton() {
+        switch (main_button.getVariant()) {
             case DRAW:
                 button_switch_draw.hide();
                 break;
 
             case MAIN:
-                break;
-
             case WALK:
                 break;
             case FINISH:
@@ -125,28 +110,11 @@ public class Controller implements Timer.Listener{
         }
         holdMainButtonCheckout();
     }
-    public void holdMainButtonCheckout(){
+
+    @Override
+    public void onClickBigButton() {
         Bar.stop();
-        switch (button_start.getVariant()) {
-            case MAIN:
-
-                setDrawMode();
-                location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL,1);
-                break;
-
-            case DRAW:
-            case FINISH:
-            case PAUSE:
-                setCommonMode();
-                location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
-                break;
-        }
-    }
-
-
-    public void shortMainButtonTriggered(){
-        Bar.stop();
-        switch (button_start.getVariant()) {
+        switch (main_button.getVariant()) {
             case DRAW:
                 line_drawer.clear();
                 break;
@@ -172,12 +140,32 @@ public class Controller implements Timer.Listener{
                 break;
         }
     }
-    public void shortSwitchButtonTriggered(){
+
+    public void holdMainButtonCheckout(){
+        Bar.stop();
+        switch (main_button.getVariant()) {
+            case MAIN:
+
+                setDrawMode();
+                location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL,1);
+                break;
+
+            case DRAW:
+            case FINISH:
+            case PAUSE:
+                setCommonMode();
+                location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
+                break;
+        }
+    }
+    @Override
+    public void onClickLittleButton() {
         button_switch_draw.nextVariant();
         shortSwitchButtonCheckout();
     }
+
     public void shortSwitchButtonCheckout(){
-        switch (button_switch_draw.getButtonVariant()) {
+        switch (button_switch_draw.getVariant()) {
             case GPS:
                 setNavigatorDrawMode();
                 break;
@@ -188,14 +176,16 @@ public class Controller implements Timer.Listener{
     }
 
 
-
-
+    @Override
+    public void onTimeUpdated(Time time) {
+        counter_monitor.setTopText(time.toString());
+    }
 
 
     private void setCommonMode(){
 
         counter_monitor.setVariant(ColorVariable.Variant.MAIN);
-        button_start.setVariant(ButtonStart.Variant.MAIN);
+        main_button.setVariant(MainButton.Variant.MAIN);
 
         path_string.setTravelledPathEnabled(false);
         map_sensor.hide();
@@ -206,7 +196,7 @@ public class Controller implements Timer.Listener{
     private void setDrawMode(){
 
         counter_monitor.setVariant(ColorVariable.Variant.DRAW);
-        button_start.setVariant(ButtonStart.Variant.DRAW);
+        main_button.setVariant(MainButton.Variant.DRAW);
 
         path_string.setTravelledPathEnabled(false);
         button_switch_draw.show();
@@ -214,22 +204,25 @@ public class Controller implements Timer.Listener{
         shortSwitchButtonCheckout();
 
     }
+
     private void setWalkingMode() {
 
         counter_monitor.setVariant(ColorVariable.Variant.WALK);
-        button_start.setVariant(ButtonStart.Variant.WALK);
+        main_button.setVariant(MainButton.Variant.WALK);
 
         path_string.setTravelledPathEnabled(true);
         location_sensor.setWalkable(true);
     }
+
     private void setPausedMode() {
 
         counter_monitor.setVariant(ColorVariable.Variant.PAUSE);
-        button_start.setVariant(ButtonStart.Variant.PAUSE);
+        main_button.setVariant(MainButton.Variant.PAUSE);
 
         location_sensor.setWalkable(false);
         timer.pause();
     }
+
     public void setFinishedMode(){
 
         Vibrator vibrator = (Vibrator) main_activity.getSystemService(Context.VIBRATOR_SERVICE);
@@ -238,12 +231,11 @@ public class Controller implements Timer.Listener{
         }
 
         counter_monitor.setVariant(ColorVariable.Variant.FINISH);
-        button_start.setVariant(ButtonStart.Variant.FINISH);
+        main_button.setVariant(MainButton.Variant.FINISH);
 
         location_sensor.setWalkable(false);
         timer.pause();
     }
-
 
 
 
@@ -252,6 +244,7 @@ public class Controller implements Timer.Listener{
         line_drawer.setDivisionStep(4);
         location_sensor.setDrawable(false);
     }
+
     private void setNavigatorDrawMode(){
         line_drawer.setDivisionStep(4);
         location_sensor.setDrawable(true);
@@ -261,11 +254,10 @@ public class Controller implements Timer.Listener{
 
 
 
-
-
     public void onStop() {
         map_state.onStop();
     }
+
     public void onStart() {
         map_state.onStart(location_sensor);
     }
@@ -273,12 +265,8 @@ public class Controller implements Timer.Listener{
     public MapState getMapState(){
         return map_state;
     }
+
     public NavigatorState getNavigatorState(){
         return navigator_state;
-    }
-
-    @Override
-    public void onTimeUpdated(Time time) {
-        counter_monitor.setTopText(time.toString());
     }
 }

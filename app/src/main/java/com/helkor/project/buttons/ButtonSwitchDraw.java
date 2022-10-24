@@ -3,94 +3,72 @@ package com.helkor.project.buttons;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.ColorStateList;
-import android.os.Build;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import com.helkor.project.R;
 import com.helkor.project.buttons.Utils.ButtonVariant;
-import com.helkor.project.global.Controller;
 
-public class ButtonSwitchDraw {
-
-    private final Controller controller;
-    Activity activity;
+public class ButtonSwitchDraw extends LittleButton {
 
     ButtonVariant<Variant> button_variant;
-    private ImageButton button_switch_draw;
+    private final ImageButton button_view;
+
+    private final int COLOR_MAIN;
+    private final int COLOR_DRAW;
+    private final long ANIMATION_DURATION = 500;
 
     public enum Variant{
         DRAW,
         GPS
     }
-    public ButtonSwitchDraw(Controller controller, int button_switch_draw_id){
-
-        this.controller = controller;
-        activity = controller.getMainActivity();
-        button_switch_draw = activity.findViewById(button_switch_draw_id);
-        button_switch_draw.setVisibility(View.INVISIBLE);
+    public ButtonSwitchDraw(Activity activity, Object implementation_context, int button_view_id, int button_show_id, int button_hide_id){
+        super(activity,implementation_context,button_show_id,button_hide_id);
+        button_view = activity.findViewById(button_view_id);
+        setOnClickListener(button_view);
         button_variant = new ButtonVariant<>(Variant.class);
-        listener();
+        COLOR_MAIN = activity.getColor(R.color.light_red);
+        COLOR_DRAW = activity.getColor(R.color.lilac);
         updateView();
-        System.out.println(button_variant.toString());
-    }
-    void listener(){
-        button_switch_draw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Vibrator vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-                }
-                controller.shortSwitchButtonTriggered();
-            }
-        });
     }
     private void updateView(){
-        switch (getButtonVariant()) {
+        switch (getVariant()) {
             case DRAW:
-                button_switch_draw.setImageResource(R.drawable.icon_draw_mode);
+                button_view.setImageResource(R.drawable.icon_draw_mode);
                 break;
             case GPS:
-                button_switch_draw.setImageResource(R.drawable.icon_gps_mode);
+                button_view.setImageResource(R.drawable.icon_gps_mode);
                 break;
         }
     }
+    @Override
     public void show(){
-        button_switch_draw.setBackgroundTintList(ColorStateList.valueOf(activity.getColor(R.color.lilac)));
-        button_switch_draw.setVisibility(View.VISIBLE);
-        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button_show);
-        button_switch_draw.startAnimation(animation);
+        button_view.setVisibility(View.VISIBLE);
+        button_view.setBackgroundTintList(ColorStateList.valueOf(COLOR_DRAW));
+        button_view.startAnimation(button_show_animation);
     }
+    @Override
     public void hide(){
-        Animation animation = AnimationUtils.loadAnimation(activity,R.anim.float_switch_button_hide);
-        button_switch_draw.startAnimation(animation);
+        button_view.startAnimation(button_hide_animation);
 
-        int colorFrom = activity.getColor(R.color.lilac);
-        int colorTo = activity.getColor(R.color.light_red);
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        colorAnimation.setDuration(500);
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), COLOR_DRAW, COLOR_MAIN);
+        colorAnimation.setDuration(ANIMATION_DURATION);
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(){
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                button_switch_draw.setBackgroundTintList(ColorStateList.valueOf((int)animator.getAnimatedValue()));
+                button_view.setBackgroundTintList(ColorStateList.valueOf((int)animator.getAnimatedValue()));
             }
 
         });
         colorAnimation.start();
-        button_switch_draw.setVisibility(View.GONE);
+        button_view.setVisibility(View.GONE);
     }
     public Variant nextVariant(){
         Variant variant = button_variant.next();
         updateView();
         return variant;
     }
-    public Variant getButtonVariant() {
+    public Variant getVariant() {
         return button_variant.face();
     }
 }

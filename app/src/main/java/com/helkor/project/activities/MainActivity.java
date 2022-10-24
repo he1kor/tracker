@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements AskForSettingsDia
 
     private Controller controller;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
-    private LocationPermissionResult locationPermissionResult;
     boolean isWaitingSettingsPermission;
 
     @Override
@@ -85,9 +84,6 @@ public class MainActivity extends AppCompatActivity implements AskForSettingsDia
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
         System.out.println("after asking");
-    }
-    public LocationPermissionResult getLocationPermissionResult(){
-        return locationPermissionResult;
     }
     //MapKitFactory setup & stop
     @Override
