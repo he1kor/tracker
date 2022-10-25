@@ -20,6 +20,7 @@ public class PathString implements LineDrawer.PathListener{
         path = 0;
         travelledPath = 0;
         travelledPathEnabled = false;
+        updatePathText();
     }
 
     public void setTravelledPathEnabled(boolean travelledPathEnabled) {

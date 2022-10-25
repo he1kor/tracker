@@ -58,7 +58,6 @@ public class Background {
         start();
     }
     public static void loadAnimationVanishing(TextView text_view,float alpha){
-        System.out.println("IT'S COOOOMINGG!!!!!");
         value_animator = ValueAnimator.ofFloat(alpha, 0.0f);
         value_animator.setDuration((long) (700 * alpha));
         value_animator.setRepeatMode(ValueAnimator.REVERSE);

@@ -69,7 +69,7 @@ public class LineDrawer implements LocationSensor.UpdateListener,TouchSensor.Lis
         }
     }
     private void checkIfFinished(){
-        if (route.getTravelledIndex() == route.size()-1){
+        if (route.getTravelledIndex() == route.size()-1 || route.size() == 0){
             finish_listener.onFinish();
         }
     }

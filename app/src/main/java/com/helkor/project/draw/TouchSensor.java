@@ -25,7 +25,7 @@ public class TouchSensor {
     public TouchSensor(Object implementation_context,View drawable_relative, MapView map_view) {
 
         this.drawable_relative = drawable_relative;
-        drawable_relative.setVisibility(View.INVISIBLE); 
+        turnOff();
         this.map_view = map_view;
         trySetListener(implementation_context);
         Listener();
