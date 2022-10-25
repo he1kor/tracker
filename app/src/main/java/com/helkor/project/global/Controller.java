@@ -19,6 +19,7 @@ import com.helkor.project.buttons.Utils.LittleButton;
 import com.helkor.project.buttons.MainButton;
 import com.helkor.project.buttons.Utils.HideToColor;
 import com.helkor.project.dialogs.ClearConfirmDialogFragment;
+import com.helkor.project.dialogs.LeaveWalkingConfirmDialogFragment;
 import com.helkor.project.draw.LineDrawer;
 import com.helkor.project.draw.LocationSensor;
 import com.helkor.project.draw.TouchSensor;
@@ -33,8 +34,7 @@ import com.helkor.project.monitors.util.Time;
 import com.helkor.project.monitors.util.Timer;
 import com.yandex.mapkit.MapKit;
 
-
-public class Controller implements Timer.Listener, MainButton.Listener, LittleButton.Listener, ClearConfirmDialogFragment.Listener {
+public class Controller implements Timer.Listener, MainButton.Listener, LittleButton.Listener, ClearConfirmDialogFragment.Listener, LeaveWalkingConfirmDialogFragment.Listener {
 
 
     public Activity getMainActivity() {
@@ -128,9 +128,9 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
 
             case MAIN:
             case WALK:
+            case PAUSE:
                 break;
             case FINISH:
-            case PAUSE:
                 counter_monitor.switchModes();
                 timer.stop();
                 break;
@@ -145,10 +145,14 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
                 location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL,1);
                 break;
 
+            case PAUSE:
+            case WALK:
+                LeaveWalkingConfirmDialogFragment leave_walking_confirm_dialog_fragment = new LeaveWalkingConfirmDialogFragment(this);
+                leave_walking_confirm_dialog_fragment.show(main_activity.getSupportFragmentManager(),"LeaveWalkingConfirmDialogFragment");
+                break;
             case DRAW:
             case VIEW:
             case FINISH:
-            case PAUSE:
                 setCommonMode();
                 location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
                 break;
@@ -209,15 +213,6 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         }
 
     }
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        line_drawer.clear();
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-    }
-
     public void shortSwitchButtonCheckout(){
         switch (button_switch_input.getVariant()) {
             case GPS:
@@ -228,6 +223,26 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
                 break;
         }
     }
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        switch (dialog.getTag()) {
+            case "ClearConfirmDialogFragment":
+                line_drawer.clear();
+                break;
+            case "LeaveWalkingConfirmDialogFragment":
+                counter_monitor.switchModes();
+                timer.stop();
+                setCommonMode();
+                location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL + 1, 1);
+                break;
+            default:
+                throw new RuntimeException("Unknown dialog");
+        }
+    }
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+    }
+
 
 
     @Override
