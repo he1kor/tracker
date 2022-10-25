@@ -108,6 +108,18 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
 
     @Override
     public void onHoldBigButton() {
+        holdMainButtonGetOutOfState();
+        holdMainButtonCheckout();
+        Bar.stop();
+    }
+
+    @Override
+    public void onClickBigButton() {
+        clickMainButtonGetOutOfState();
+        clickMainButtonCheckout();
+        Bar.stop();
+    }
+    private void holdMainButtonGetOutOfState(){
         switch (main_button.getVariant()) {
             case DRAW:
                 button_switch_input.hideWithColor(HideToColor.MAIN);
@@ -123,41 +135,7 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
                 timer.stop();
                 break;
         }
-        holdMainButtonCheckout();
     }
-
-    @Override
-    public void onClickBigButton() {
-        Bar.stop();
-        switch (main_button.getVariant()) {
-            case DRAW:
-                setViewDrawMode();
-                break;
-            case VIEW:
-                setDrawMode();
-                break;
-            case MAIN:
-                if (location_sensor.getMyLocation() == null) {
-                    location_sensor.setExpectingLocation(true);
-                } else {
-                    location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
-                }
-                setWalkingMode();
-                counter_monitor.switchModes();
-                timer.start();
-                break;
-
-            case WALK:
-                setPausedMode();
-                break;
-
-            case PAUSE:
-                timer.resume();
-                setWalkingMode();
-                break;
-        }
-    }
-
     public void holdMainButtonCheckout(){
         Bar.stop();
         switch (main_button.getVariant()) {
@@ -168,10 +146,50 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
                 break;
 
             case DRAW:
+            case VIEW:
             case FINISH:
             case PAUSE:
                 setCommonMode();
                 location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
+                break;
+        }
+    }
+    private void clickMainButtonGetOutOfState(){
+        switch (main_button.getVariant()) {
+            case DRAW:
+            case VIEW:
+            case WALK:
+                break;
+
+            case MAIN:
+                if (location_sensor.getMyLocation() == null) {
+                    location_sensor.setExpectingLocation(true);
+                } else {
+                    location_sensor.moveCamera(location_sensor.getMyLocation(), this.COMFORTABLE_ZOOM_LEVEL+1,1);
+                }
+                counter_monitor.switchModes();
+                timer.start();
+                break;
+
+            case PAUSE:
+                timer.resume();
+                break;
+        }
+    }
+    private void clickMainButtonCheckout(){
+        switch (main_button.getVariant()) {
+            case DRAW:
+                setViewDrawMode();
+                break;
+            case VIEW:
+                setDrawMode();
+                break;
+            case MAIN:
+            case PAUSE:
+                setWalkingMode();
+                break;
+            case WALK:
+                setPausedMode();
                 break;
         }
     }
