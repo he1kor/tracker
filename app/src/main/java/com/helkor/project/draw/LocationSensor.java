@@ -5,8 +5,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.helkor.project.global.Controller;
-import com.helkor.project.map.MapState;
 import com.helkor.project.map.util.ShortLocationArray;
 import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.MapKit;

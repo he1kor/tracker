@@ -1,6 +1,5 @@
 package com.helkor.project.monitors.util;
 
-import android.content.Context;
 import android.util.Log;
 
 public class Timer extends Time implements Runnable {

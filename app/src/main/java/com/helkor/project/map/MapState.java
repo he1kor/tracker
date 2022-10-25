@@ -1,13 +1,9 @@
 package com.helkor.project.map;
 
-import android.app.Activity;
-import android.view.View;
 
-import com.helkor.project.R;
+import android.view.View;
 import com.helkor.project.draw.LocationSensor;
-import com.helkor.project.global.Controller;
 import com.yandex.mapkit.MapKit;
-import com.yandex.mapkit.location.LocationManager;
 import com.yandex.mapkit.map.Map;
 import com.yandex.mapkit.map.MapObjectCollection;
 import com.yandex.mapkit.map.MapType;

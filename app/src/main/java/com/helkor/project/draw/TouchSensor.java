@@ -1,15 +1,11 @@
 package com.helkor.project.draw;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.helkor.project.global.Controller;
-import com.helkor.project.map.MapState;
 import com.yandex.mapkit.ScreenPoint;
 import com.yandex.mapkit.geometry.Point;
-import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.mapview.MapView;
 
 public class TouchSensor {

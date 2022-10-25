@@ -12,13 +12,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.TextView;
 
 import com.helkor.project.R;
-import com.helkor.project.activities.util.LocationPermissionResult;
 import com.helkor.project.dialogs.AskForSettingsDialogFragment;
 import com.helkor.project.global.Controller;
 import com.helkor.project.global.YandexMapkit;

@@ -8,8 +8,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.helkor.project.activities.MainActivity;
-
 public class Bar {
     private static Activity activity;
     private static ValueAnimator anim;
