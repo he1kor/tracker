@@ -22,7 +22,7 @@ public class LeaveWalkingConfirmDialogFragment extends DialogFragment {
             listener = (Listener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement NoticeDialogListener");
+                    + " must implement Listener");
         }
     }
     @NonNull

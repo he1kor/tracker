@@ -22,7 +22,7 @@ public abstract class LittleButton {
     protected final Vibrator vibrator;
 
     public interface Listener{
-        public void onClickLittleButton(View view);
+        void onClickLittleButton(View view);
     }
     //without button_view
     protected LittleButton(Activity activity,Object implementation_context){
@@ -84,7 +84,8 @@ public abstract class LittleButton {
         try {
             listener = (Listener) implementation_context;
         } catch (ClassCastException e){
-            throw new ClassCastException("Context doesn't implement LittleButton.Listener interface");
+            throw new ClassCastException(implementation_context.toString()
+                    + " must implement Listener");
         }
     }
 

@@ -18,20 +18,21 @@ public class Timer extends Time implements Runnable {
     private Thread timerThread;
     private Listener listener;
 
-    public Timer(Object context){
+    public Timer(Object implementation_context){
         super(0);
-        tryAddListener(context);
+        tryAddListener(implementation_context);
         state = State.STOPPED;
     }
     public Timer(){
         super(0);
         state = State.STOPPED;
     }
-    private void tryAddListener(Object context){
+    private void tryAddListener(Object implementation_context){
         try{
-            listener = (Listener) context;
+            listener = (Listener) implementation_context;
         } catch (Exception e){
-            throw new RuntimeException("Couldn't add listener to context");
+            throw new RuntimeException(implementation_context.toString()
+                    + " must implement Listener");
         }
     }
 

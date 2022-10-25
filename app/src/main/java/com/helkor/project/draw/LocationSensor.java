@@ -1,11 +1,8 @@
 package com.helkor.project.draw;
 
 
-import android.Manifest;
 import android.util.Log;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import com.helkor.project.global.Controller;
@@ -20,25 +17,34 @@ import com.yandex.mapkit.location.Location;
 import com.yandex.mapkit.location.LocationListener;
 import com.yandex.mapkit.location.LocationManager;
 import com.yandex.mapkit.location.LocationStatus;
-import com.yandex.mapkit.map.CameraListener;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.map.Map;
 import com.yandex.mapkit.mapview.MapView;
 
 public class LocationSensor{
-    private final Controller controller;
 
     private LocationListener location_listener;
-    private MapView map_view;
-    private MapKit map_kit;
+    private final MapView map_view;
+    private final MapKit map_kit;
     private Map map;
-    private LineDrawer line_drawer;
     private ShortLocationArray last_locations;
+    private Point last_sent_point;
     private final int MAX_CHECK_LINE = 3;
 
     private boolean is_drawable = false;
     private boolean is_walkable = false;
     private final float COMFORTABLE_ZOOM_LEVEL;
+
+    private UpdateListener update_listener;
+    public interface UpdateListener{
+        void onNewPoint(Point point, boolean isTemp);
+        void onPointTravelled(Point point,double accuracy);
+    }
+
+    private CameraInitListener camera_init_listener;
+    public interface CameraInitListener{
+        void onCameraInitialized();
+    }
 
     private boolean expecting_location;
     private float expecting_zoom;
@@ -46,17 +52,31 @@ public class LocationSensor{
     private LocationManager location_manager;
 
     private Point my_location;
-    public LocationSensor(Controller controller, MapState map_state, float COMFORTABLE_ZOOM_LEVEL, LineDrawer line_drawer, MapKit map_kit){
-
-        this.controller = controller;
-
+    public LocationSensor(Object update_listener_implementation_context,Object camera_listener_implementation_context,MapView map_view, MapKit map_kit,float COMFORTABLE_ZOOM_LEVEL){
         this.map_kit = map_kit;
-        this.map_view = map_state.getMapView();
+        this.map_view = map_view;
         this.map = map_view.getMap();
         this.COMFORTABLE_ZOOM_LEVEL = COMFORTABLE_ZOOM_LEVEL;
-        this.line_drawer = line_drawer;
         last_locations = new ShortLocationArray(MAX_CHECK_LINE);
+        tryAddUpdateListener(update_listener_implementation_context);
+        tryAddCameraInitListener(camera_listener_implementation_context);
         Listener();
+    }
+    private void tryAddUpdateListener(Object implementation_context){
+        try {
+            update_listener = (UpdateListener) implementation_context;
+        } catch (ClassCastException e){
+            throw new RuntimeException(implementation_context.toString()
+                    + " must implement UpdateListener");
+        }
+    }
+    private void tryAddCameraInitListener(Object implementation_context){
+        try {
+            camera_init_listener = (CameraInitListener) implementation_context;
+        } catch (ClassCastException e){
+            throw new RuntimeException(implementation_context.toString()
+                    + " must implement CameraInitListener");
+        }
     }
     private void setLocation(Location location){
         last_locations.add(location);
@@ -69,7 +89,7 @@ public class LocationSensor{
             public void onLocationUpdated(@NonNull Location location) {
                 last_locations.add(location);
                 if (is_walkable) {
-                    line_drawer.checkForTravelled(location.getPosition(),location.getAccuracy());
+                    update_listener.onPointTravelled(location.getPosition(),location.getAccuracy());
                 }
                 if (is_drawable && last_locations.size() == MAX_CHECK_LINE) {
                     addPoint();
@@ -105,16 +125,17 @@ public class LocationSensor{
         location_manager.unsubscribe(location_listener);
     }
     private void addPoint(){
-
-        Point lastDrewPoint = line_drawer.getRoute().getLastPoint();
-        if (lastDrewPoint != null) {
-            if (Geo.distance(lastDrewPoint, last_locations.getLastPoint()) > last_locations.getLastAccuracy())
-                line_drawer.buildToPoint(last_locations.getLastPoint(),false);
+        if (last_sent_point != null) {
+            if (Geo.distance(last_sent_point, last_locations.getLastPoint()) > last_locations.getLastAccuracy())
+                update_listener.onNewPoint(last_locations.getLastPoint(),false);
             else {
-                line_drawer.buildToPoint(last_locations.getLastPoint(),true);
+                update_listener.onNewPoint(last_locations.getLastPoint(),true);
             }
         }
-        else line_drawer.buildToPoint(last_locations.getMinimalAccuracyPoint().getPoint());
+        else {
+            update_listener.onNewPoint(last_locations.getMinimalAccuracyPoint().getPoint(),false);
+        }
+        last_sent_point = last_locations.getLastPoint();
     }
     public void moveCamera(Point point, float zoom,float duration) {
         if (point != null) {
@@ -138,7 +159,7 @@ public class LocationSensor{
                     @Override
                     public void onMoveFinished(boolean b) {
                         System.out.println("finished");
-                        controller.initButtons();
+                        camera_init_listener.onCameraInitialized();
                     }
                 }
         );

@@ -3,9 +3,7 @@ package com.helkor.project.draw;
 import android.annotation.SuppressLint;
 
 import com.helkor.project.draw.util.Palette;
-import com.helkor.project.global.Controller;
 import com.helkor.project.map.MapState;
-import com.helkor.project.monitors.util.Timer;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.geometry.Polyline;
 import com.yandex.mapkit.map.MapObjectCollection;
@@ -13,7 +11,7 @@ import com.yandex.mapkit.map.PolylineMapObject;
 
 import java.util.ArrayList;
 
-public class LineDrawer {
+public class LineDrawer implements LocationSensor.UpdateListener,TouchSensor.Listener {
 
     private final MapObjectCollection map_object_collection;
     private PolylineMapObject routePolyline;
@@ -22,6 +20,21 @@ public class LineDrawer {
 
     private final double MIN_ADDITIONAL_ACCURACY = 4;
     private final int MAX_POINTS = 500;
+
+    @Override
+    public void onNewPoint(Point point, boolean isTemp) {
+        buildToPoint(point,isTemp);
+    }
+
+    @Override
+    public void onPointTravelled(Point point, double accuracy) {
+        checkForTravelled(point,accuracy);
+    }
+
+    @Override
+    public void onTouch(Point point, boolean isTemp) {
+        buildToPoint(point,isTemp);
+    }
 
     public interface PathListener{
         void onPathUpdated(int path);
@@ -39,18 +52,20 @@ public class LineDrawer {
         route = new Route();
         is_temporary_last = false;
     }
-    public void addPathListener(Object context){
+    public void addPathListener(Object implementation_context){
         try{
-            path_listener = (LineDrawer.PathListener) context;
+            path_listener = (LineDrawer.PathListener) implementation_context;
         } catch (Exception e){
-            throw new RuntimeException("Couldn't add listener to context");
+            throw new RuntimeException(implementation_context.toString()
+                    + " must implement PathListener");
         }
     }
-    public void addFinishListener(Object context){
+    public void addFinishListener(Object implementation_context){
         try{
-            finish_listener = (LineDrawer.FinishListener) context;
+            finish_listener = (LineDrawer.FinishListener) implementation_context;
         } catch (Exception e){
-            throw new RuntimeException("Couldn't add listener to context");
+            throw new RuntimeException(implementation_context.toString()
+                    + " must implement FinishListener");
         }
     }
     private void checkIfFinished(){

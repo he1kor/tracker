@@ -13,32 +13,34 @@ import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.mapview.MapView;
 
 public class TouchSensor {
-    private final Controller controller;
 
     private float x;
     private float y;
-    private boolean isStarted;
 
-    private View drawable_relative;
-    private MapView map_view;
-    private LineDrawer line_drawer;
+    private final View drawable_relative;
+    private final MapView map_view;
+
+    public interface Listener{
+        void onTouch(Point point,boolean isTemp);
+    }
+    Listener listener;
 
     private Point point = new Point(0,0);
-    CameraPosition currentCameraPosition;
+    public TouchSensor(Object implementation_context,View drawable_relative, MapView map_view) {
 
-    public void setStarted(boolean started) {
-        isStarted = started;
-    }
-    public TouchSensor(Controller controller, int id, MapState map_state, LineDrawer line_drawer) {
-
-        this.controller = controller;
-        Activity activity = controller.getMainActivity();
-
-        this.drawable_relative = activity.findViewById(id);
+        this.drawable_relative = drawable_relative;
         drawable_relative.setVisibility(View.INVISIBLE); 
-        this.map_view = map_state.getMapView();
-        this.line_drawer = line_drawer;
+        this.map_view = map_view;
+        trySetListener(implementation_context);
         Listener();
+    }
+    private void trySetListener(Object implementation_context){
+        try {
+            listener = (Listener) implementation_context;
+        } catch (ClassCastException e){
+            throw new RuntimeException(implementation_context.toString()
+                    + " must implement Listener");
+        }
     }
     @SuppressLint("ClickableViewAccessibility")
     void Listener(){
@@ -48,8 +50,7 @@ public class TouchSensor {
                 x = event.getX();
                 y = event.getY();
                 point = map_view.screenToWorld(new ScreenPoint(x,y));
-                currentCameraPosition = map_view.getMap().getCameraPosition();
-                line_drawer.buildToPoint(point,true);
+                listener.onTouch(point,true);
                 return true;
             }
         });

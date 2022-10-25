@@ -34,7 +34,7 @@ import com.helkor.project.monitors.util.Time;
 import com.helkor.project.monitors.util.Timer;
 import com.yandex.mapkit.MapKit;
 
-public class Controller implements LineDrawer.FinishListener,Timer.Listener, MainButton.Listener, LittleButton.Listener, ClearConfirmDialogFragment.Listener, LeaveWalkingConfirmDialogFragment.Listener {
+public class Controller implements LocationSensor.CameraInitListener,LineDrawer.FinishListener,Timer.Listener, MainButton.Listener,LittleButton.Listener, ClearConfirmDialogFragment.Listener, LeaveWalkingConfirmDialogFragment.Listener {
 
 
     public Activity getMainActivity() {
@@ -80,21 +80,20 @@ public class Controller implements LineDrawer.FinishListener,Timer.Listener, Mai
         timer = new Timer(this);
         path_string = new PathString(counter_monitor, PathString.BOTTOM);
         line_drawer = new LineDrawer(map_state);
-        navigator_state = new NavigatorState(this,map_state);
 
-        location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer,map_kit);
-        map_sensor = new TouchSensor(this,R.id.relative_layout_1,map_state,line_drawer);
+        navigator_state = new NavigatorState(getMainActivity(),map_state);
+        location_sensor = new LocationSensor(line_drawer,this,map_state.getMapView(),map_kit,COMFORTABLE_ZOOM_LEVEL);
+        map_sensor = new TouchSensor(line_drawer,getMainActivity().findViewById(R.id.relative_layout_1),map_state.getMapView());
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         line_drawer.addPathListener(path_string);
         line_drawer.addFinishListener(this);
         Background.loadAnimationLoadingText(main_activity);
     }
 
+    @Override
+    public void onCameraInitialized() {
+        initButtons();
+    }
     public void initButtons (){
         Background.setLoaded(true);
         map_state.show();

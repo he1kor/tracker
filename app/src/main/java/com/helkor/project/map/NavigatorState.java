@@ -6,7 +6,6 @@ import android.graphics.PointF;
 import androidx.annotation.NonNull;
 
 import com.helkor.project.R;
-import com.helkor.project.global.Controller;
 import com.yandex.mapkit.MapKit;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.layers.ObjectEvent;
@@ -24,9 +23,9 @@ public class NavigatorState implements UserLocationObjectListener{
     private UserLocationLayer user_location_layer;
     private MapKit map_kit;
 
-    public NavigatorState(Controller controller, MapState map_state){
+    public NavigatorState(Activity activity, MapState map_state){
 
-        activity = controller.getMainActivity();
+        this.activity = activity;
 
         map_kit = MapKitFactory.getInstance();
         user_location_layer = map_kit.createUserLocationLayer(map_state.getMapWindow());

@@ -14,8 +14,8 @@ public class BigButton extends LittleButton {
     private Listener listener;
 
     public interface Listener{
-        public void onHoldBigButton();
-        public void onClickBigButton();
+        void onHoldBigButton();
+        void onClickBigButton();
     }
 
     protected BigButton(int button_view_id,Activity activity, Object implementation_context){
@@ -36,7 +36,8 @@ public class BigButton extends LittleButton {
         try {
             listener = (Listener) implementation_context;
         } catch (ClassCastException e){
-            throw new ClassCastException("Context doesn't implement BigButton.Listener interface");
+            throw new ClassCastException(implementation_context.toString()
+                    + " must implement Listener");
         }
     }
     @Override
