@@ -84,10 +84,17 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer,map_kit);
         map_sensor = new TouchSensor(this,R.id.relative_layout_1,map_state,line_drawer);
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         line_drawer.addListener(path_string);
+        Background.loadAnimationLoadingText(main_activity);
     }
 
     public void initButtons (){
+        Background.setLoaded(true);
         map_state.show();
         Background.vanishing(main_activity);
         Bar.setActivity(main_activity);
