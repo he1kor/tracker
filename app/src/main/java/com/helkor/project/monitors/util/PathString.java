@@ -2,7 +2,7 @@ package com.helkor.project.monitors.util;
 
 import com.helkor.project.draw.LineDrawer;
 
-public class PathString implements LineDrawer.Listener{
+public class PathString implements LineDrawer.PathListener{
     public final static boolean TOP = true;
     public final static boolean BOTTOM = false;
     private int path;
@@ -70,4 +70,5 @@ public class PathString implements LineDrawer.Listener{
     public void onTravelPathUpdated(int travelledPath) {
         setTravelledPath(travelledPath);
     }
+
 }

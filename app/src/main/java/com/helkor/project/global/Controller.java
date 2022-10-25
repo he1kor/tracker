@@ -34,7 +34,7 @@ import com.helkor.project.monitors.util.Time;
 import com.helkor.project.monitors.util.Timer;
 import com.yandex.mapkit.MapKit;
 
-public class Controller implements Timer.Listener, MainButton.Listener, LittleButton.Listener, ClearConfirmDialogFragment.Listener, LeaveWalkingConfirmDialogFragment.Listener {
+public class Controller implements LineDrawer.FinishListener,Timer.Listener, MainButton.Listener, LittleButton.Listener, ClearConfirmDialogFragment.Listener, LeaveWalkingConfirmDialogFragment.Listener {
 
 
     public Activity getMainActivity() {
@@ -60,12 +60,13 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
     private SwitchInputButton button_switch_input;
     private ClearButton button_clear;
 
+
+
     private enum DrawMode{
         FINGER,
-        LOCATION
+        LOCATION;
     };
     private DrawMode draw_mode;
-
     private final float COMFORTABLE_ZOOM_LEVEL = 17.5f;
 
     public Controller(MainActivity activity,MapKit map_kit){
@@ -78,7 +79,7 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         counter_monitor = new CounterMonitor(main_activity,R.id.pedometer_layout_outside,R.id.pedometer_layout,R.id.pedometer_text1,R.id.pedometer_text2);
         timer = new Timer(this);
         path_string = new PathString(counter_monitor, PathString.BOTTOM);
-        line_drawer = new LineDrawer(this,map_state);
+        line_drawer = new LineDrawer(map_state);
         navigator_state = new NavigatorState(this,map_state);
 
         location_sensor = new LocationSensor(this,map_state,COMFORTABLE_ZOOM_LEVEL,line_drawer,map_kit);
@@ -89,7 +90,8 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        line_drawer.addListener(path_string);
+        line_drawer.addPathListener(path_string);
+        line_drawer.addFinishListener(this);
         Background.loadAnimationLoadingText(main_activity);
     }
 
@@ -126,6 +128,7 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         clickMainButtonCheckout();
         Bar.stop();
     }
+
     private void holdMainButtonGetOutOfState(){
         switch (main_button.getVariant()) {
             case DRAW:
@@ -204,7 +207,6 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
                 break;
         }
     }
-
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClickLittleButton(View view) {
@@ -220,6 +222,7 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
         }
 
     }
+
     public void shortSwitchButtonCheckout(){
         switch (button_switch_input.getVariant()) {
             case GPS:
@@ -249,7 +252,6 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
     }
-
 
 
     @Override
@@ -324,6 +326,11 @@ public class Controller implements Timer.Listener, MainButton.Listener, LittleBu
     }
 
 
+
+    @Override
+    public void onFinish() {
+        setFinishedMode();
+    }
 
     private void setFingerDrawMode(){
         draw_mode = DrawMode.FINGER;

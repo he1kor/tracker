@@ -15,8 +15,6 @@ import java.util.ArrayList;
 
 public class LineDrawer {
 
-    private final Controller controller;
-
     private final MapObjectCollection map_object_collection;
     private PolylineMapObject routePolyline;
     private final Route route;
@@ -25,35 +23,45 @@ public class LineDrawer {
     private final double MIN_ADDITIONAL_ACCURACY = 4;
     private final int MAX_POINTS = 500;
 
-    public interface Listener{
+    public interface PathListener{
         void onPathUpdated(int path);
         void onTravelPathUpdated(int travelled_path);
     }
-    Listener listener;
+    public interface FinishListener{
+        void onFinish();
+    }
+    PathListener path_listener;
+    FinishListener finish_listener;
 
     @SuppressLint("HandlerLeak")
-    public LineDrawer(Controller controller, MapState map_state) {
-        this.controller = controller;
+    public LineDrawer(MapState map_state) {
         map_object_collection = map_state.getMapView().getMap().getMapObjects().addCollection();
         route = new Route();
         is_temporary_last = false;
     }
-    public void addListener(Object context){
+    public void addPathListener(Object context){
         try{
-            listener = (LineDrawer.Listener) context;
+            path_listener = (LineDrawer.PathListener) context;
+        } catch (Exception e){
+            throw new RuntimeException("Couldn't add listener to context");
+        }
+    }
+    public void addFinishListener(Object context){
+        try{
+            finish_listener = (LineDrawer.FinishListener) context;
         } catch (Exception e){
             throw new RuntimeException("Couldn't add listener to context");
         }
     }
     private void checkIfFinished(){
-        if (route.getTravelledPath() == route.getPath()){
-            controller.setFinishedMode();
+        if (route.getTravelledIndex() == route.size()-1){
+            finish_listener.onFinish();
         }
     }
     private void update(){
         route.removeOverlimitedPoints(MAX_POINTS);
-        listener.onPathUpdated((int) route.getPath());
-        listener.onTravelPathUpdated((int) route.getTravelledPath());
+        path_listener.onPathUpdated((int) route.getPath());
+        path_listener.onTravelPathUpdated((int) route.getTravelledPath());
         if (route.size() > 0) {
             if (routePolyline != null){
                 routePolyline.setGeometry(new Polyline(route.getPoints()));
