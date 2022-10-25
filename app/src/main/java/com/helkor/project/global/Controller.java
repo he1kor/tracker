@@ -36,7 +36,6 @@ import com.yandex.mapkit.MapKit;
 
 public class Controller implements LocationSensor.CameraInitListener,LineDrawer.FinishListener,Timer.Listener, MainButton.Listener,LittleButton.Listener, ClearConfirmDialogFragment.Listener, LeaveWalkingConfirmDialogFragment.Listener {
 
-
     public Activity getMainActivity() {
         return main_activity;
     }
@@ -67,12 +66,13 @@ public class Controller implements LocationSensor.CameraInitListener,LineDrawer.
         LOCATION;
     };
     private DrawMode draw_mode;
+
     private final float COMFORTABLE_ZOOM_LEVEL = 17.5f;
 
     public Controller(MainActivity activity,MapKit map_kit){
         this.main_activity = activity;
         this.map_kit = map_kit;
-        map_state = new MapState(this,map_kit);
+        map_state = new MapState(getMainActivity().findViewById(R.id.map),map_kit);
     }
 
     public void setup(){

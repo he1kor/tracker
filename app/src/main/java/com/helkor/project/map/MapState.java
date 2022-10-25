@@ -16,9 +16,6 @@ import com.yandex.mapkit.mapview.MapView;
 
 public class MapState {
 
-    private final Controller controller;
-
-    private Activity activity;
     private MapView map_view;
     private MapWindow map_window;
     private Map map;
@@ -26,12 +23,10 @@ public class MapState {
     private MapObjectCollection map_object_collection;
 
 
-    public MapState(Controller controller, MapKit map_kit){
-        this.controller = controller;
-        activity = controller.getMainActivity();
+    public MapState(MapView map_view, MapKit map_kit){
 
         this.map_kit = map_kit;
-        map_view = activity.findViewById(R.id.map);
+        this.map_view = map_view;
         map_window = map_view.getMapWindow();
         map = map_view.getMap();
         map_object_collection = map.getMapObjects();
