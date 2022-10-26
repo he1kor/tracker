@@ -12,7 +12,7 @@ android {
         minSdk 24
         targetSdk 33
         versionCode 1
-        versionName "1.1.0"
+        versionName "1.2.0"
         buildConfigField "String", "API_KEY", localProperties ['api_key']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -32,9 +32,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.yandex.android:maps.mobile:4.1.0-full'
+    implementation 'com.yandex.android:maps.mobile:4.2.2-lite'
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
