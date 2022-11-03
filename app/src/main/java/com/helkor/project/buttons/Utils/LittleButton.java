@@ -28,7 +28,6 @@ public abstract class LittleButton {
     protected LittleButton(Activity activity,Object implementation_context){
         this.vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
         trySetListener(implementation_context);
-        this.hashCode();
     }
     protected LittleButton(Activity activity,Object implementation_context, int button_show_id){
         this(activity,implementation_context);
@@ -68,7 +67,7 @@ public abstract class LittleButton {
 
 
     protected LittleButton(int button_view_id,Activity activity, Object implementation_context){
-        this(activity,button_view_id);
+        this(button_view_id,activity);
         trySetListener(implementation_context);
     }
     protected LittleButton(int button_view_id,Activity activity, Object implementation_context, int button_show_id) {
@@ -79,6 +78,7 @@ public abstract class LittleButton {
         this(button_view_id,activity,implementation_context,button_show_id);
         button_hide_animation = AnimationUtils.loadAnimation(activity,button_hide_id);
     }
+
 
     protected void trySetListener(Object implementation_context){
         try {

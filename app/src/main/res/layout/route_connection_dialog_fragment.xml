@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintlayout"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+
+
+        <TextView
+            android:id="@+id/foreign_token_text"
+            android:layout_width="match_parent"
+            android:layout_height="30sp"
+            android:layout_marginVertical="10sp"
+            android:gravity="center_horizontal"
+            android:text="Foreign tokens:"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View style="@style/Divider"
+            android:id="@+id/top_divider"
+            app:layout_constraintStart_toEndOf="@id/foreign_token_text"
+            app:layout_constraintTop_toBottomOf="@id/foreign_token_text" />
+        <RelativeLayout
+            android:id="@+id/token_input_layout_outside"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="5dp"
+            android:layout_below="@id/top_divider"
+            android:gravity="center_horizontal"
+            app:layout_constraintStart_toEndOf="@id/top_divider"
+            app:layout_constraintTop_toBottomOf="@id/top_divider"
+            android:visibility="gone"
+            >
+
+            <RelativeLayout
+                android:id="@+id/token_input_layout"
+                android:layout_width="@dimen/counter_monitor_width"
+                android:layout_height="wrap_content"
+                android:background="@drawable/counter_background_3"
+                android:gravity="center">
+
+                <EditText
+                    android:gravity="center_horizontal"
+                    android:id="@+id/token_input"
+                    android:layout_width="85sp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:maxLength="5"
+                    android:textSize="23sp"
+                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+                    >
+                    </EditText>
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scroll_list"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            app:layout_constrainedHeight="true"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:visibility="visible"
+
+            app:layout_constraintTop_toBottomOf="@id/top_divider"
+            app:layout_constraintEnd_toStartOf="@id/mode_layout"
+            app:layout_constraintBottom_toTopOf="@id/mode_layout">
+
+        </androidx.recyclerview.widget.RecyclerView>
+        <View style="@style/Divider"
+            android:id="@+id/middle_divider"
+            app:layout_constraintStart_toEndOf="@id/scroll_list"
+            app:layout_constraintTop_toBottomOf="@id/scroll_list"/>
+
+        <RelativeLayout
+            android:id="@+id/mode_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            app:layout_constraintStart_toEndOf="@id/middle_divider"
+            app:layout_constraintTop_toBottomOf="@id/middle_divider" >
+
+            <ImageButton
+
+                android:id="@+id/button_switch_arrow"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginVertical="5dp"
+                android:layout_centerHorizontal="true"
+
+                android:background="@drawable/circle_variant_3"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/arrow_up"
+                android:textAllCaps="false"
+                android:textSize="48sp"
+                android:translationZ="5dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:tint="#FFFFFF" />
+
+            <TextView
+                android:id="@+id/mode_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/button_switch_arrow"
+                android:gravity="center_horizontal"
+                android:text="Send route"
+                android:textSize="20sp"/>
+        </RelativeLayout>
+
+        <View style="@style/Divider"
+            android:id="@+id/bottom_divider"
+            app:layout_constraintStart_toEndOf="@id/mode_layout"
+            app:layout_constraintTop_toBottomOf="@id/mode_layout" />
+
+        <RelativeLayout
+            android:id="@+id/middle_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            app:layout_constraintTop_toBottomOf="@id/bottom_divider" >
+            <TextView
+                android:id="@+id/your_token_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Your token:"
+                android:textSize="20sp"
+                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"/>
+            <RelativeLayout
+                android:id="@+id/your_token_layout_outside"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginVertical="5dp"
+                android:layout_below="@+id/your_token_text"
+                android:gravity="center_horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/your_token_layout"
+                    android:layout_width="@dimen/counter_monitor_width"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/counter_background_3"
+                    android:gravity="center"
+                    android:translationZ="1dp">
+
+                    <TextView
+                        android:id="@+id/your_token_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:text="ABCDE"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/counter_monitor_font_size" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</FrameLayout >

@@ -190,6 +190,7 @@ public class ModeState {
         current_mode = Mode.DRAW;
         updateUI(ColorVariable.Variant.DRAW);
 
+        //controller.button_connection.show();
         controller.button_switch_input.show();
         controller.button_clear.show();
         if (controller.button_switch_input.getVariant() == SwitchInputButton.Variant.GPS){
@@ -214,6 +215,7 @@ public class ModeState {
 
         updateUI(ColorVariable.Variant.MAIN);
 
+        //controller.button_connection.hideWithColor(HideToColor.MAIN);
         controller.button_switch_input.hideWithColor(HideToColor.MAIN);
         controller.button_clear.hideWithColor(HideToColor.MAIN);
 
@@ -224,6 +226,7 @@ public class ModeState {
         current_mode = Mode.VIEW;
         checkoutLeaveDrawMode();
 
+        //controller.button_connection.hideWithColor(HideToColor.VIEW);
         controller.button_switch_input.hideWithColor(HideToColor.VIEW);
         controller.button_clear.hideWithColor(HideToColor.VIEW);
 
@@ -244,6 +247,7 @@ public class ModeState {
 
         updateUI(ColorVariable.Variant.DRAW);
 
+        //controller.button_connection.show();
         controller.button_switch_input.show();
         controller.button_clear.show();
 

@@ -46,12 +46,10 @@ public class MapState {
         map_view.getMap().setMapType(MapType.VECTOR_MAP);
         map_view.getMap().setModelsEnabled(true);
         map_view.getMap().set2DMode(false);
-        System.out.println(map_view.getVisibility() + " is visibility of map");
     }
 
     public void show(){
         map_view.setVisibility(View.VISIBLE);
-        System.out.println(map_view.getVisibility() + " is visibility of map");
     }
     public void hide(){
         map_view.setVisibility(View.INVISIBLE);

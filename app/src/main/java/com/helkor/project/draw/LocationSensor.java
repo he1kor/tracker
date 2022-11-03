@@ -58,7 +58,7 @@ public class LocationSensor{
         last_locations = new ShortLocationArray(MAX_CHECK_LINE);
         tryAddUpdateListener(update_listener_implementation_context);
         tryAddCameraInitListener(camera_listener_implementation_context);
-        Listener();
+        initializeLocationListener();
     }
     private void tryAddUpdateListener(Object implementation_context){
         try {
@@ -80,7 +80,7 @@ public class LocationSensor{
         last_locations.add(location);
     }
 
-    private void Listener() {
+    private void initializeLocationListener() {
         location_manager = map_kit.createLocationManager();
         location_listener = new LocationListener() {
             @Override
