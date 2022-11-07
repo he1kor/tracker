@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintlayout"
+        android:background="@color/white"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center">
@@ -20,6 +20,7 @@
             android:layout_marginVertical="10sp"
             android:gravity="center_horizontal"
             android:text="Foreign tokens:"
+            android:textColor="@color/text_grey"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,40 +33,83 @@
             android:id="@+id/token_input_layout_outside"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="5dp"
             android:layout_below="@id/top_divider"
-            android:gravity="center_horizontal"
+            android:gravity="center"
+            android:paddingVertical="5dp"
             app:layout_constraintStart_toEndOf="@id/top_divider"
             app:layout_constraintTop_toBottomOf="@id/top_divider"
             android:visibility="gone"
-            >
-
+            android:clipToPadding="false">
+            <ImageButton
+                android:id="@+id/clear_token_button"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginHorizontal="5dp"
+                android:padding="3dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_trash"
+                android:background="@drawable/circle_variant_3"
+                android:translationZ="2dp"
+                app:tint="#FFFFFF">
+            </ImageButton>
             <RelativeLayout
                 android:id="@+id/token_input_layout"
                 android:layout_width="@dimen/counter_monitor_width"
                 android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/clear_token_button"
                 android:background="@drawable/counter_background_3"
-                android:gravity="center">
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:translationZ="2dp">
 
                 <EditText
-                    android:gravity="center_horizontal"
+                    android:gravity="center"
                     android:id="@+id/token_input"
-                    android:layout_width="85sp"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
                     android:maxLength="5"
+                    android:singleLine="true"
                     android:textSize="23sp"
-                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-
-                    >
+                    android:backgroundTint="@color/white"
+                    android:textColor="@color/white"
+                    android:background="@null"
+                    android:inputType="textNoSuggestions|textCapCharacters"
+                    android:hint="Input"
+                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz">
                     </EditText>
             </RelativeLayout>
+            <ImageButton
+                android:id="@+id/accept_route"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginHorizontal="5dp"
+                android:layout_toEndOf="@id/token_input_layout"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/check_mark"
+                android:background="@drawable/circle_variant_3"
+                android:translationZ="2dp"
+                app:tint="#FFFFFF">
+            </ImageButton>
+            <TextView
+                android:id="@+id/request_timer"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginHorizontal="5dp"
+                android:layout_toEndOf="@id/token_input_layout"
+                android:translationZ="2dp"
+                android:text="60"
+                android:textColor="@color/white"
+                android:textSize="@dimen/counter_monitor_font_size"
+                android:gravity="center"
+                android:visibility="invisible">
+            </TextView>
         </RelativeLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/scroll_list"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="137dp"
             android:layout_gravity="center_horizontal"
             app:layout_constrainedHeight="true"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -96,18 +140,17 @@
                 android:layout_height="45dp"
                 android:layout_marginVertical="5dp"
                 android:layout_centerHorizontal="true"
-
                 android:background="@drawable/circle_variant_3"
                 android:padding="10dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/arrow_up"
                 android:textAllCaps="false"
                 android:textSize="48sp"
-                android:translationZ="5dp"
+                android:translationZ="2dp"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:tint="#FFFFFF" />
+                app:tint="@color/white" />
 
             <TextView
                 android:id="@+id/mode_text"
@@ -116,6 +159,7 @@
                 android:layout_below="@+id/button_switch_arrow"
                 android:gravity="center_horizontal"
                 android:text="Send route"
+                android:textColor="@color/text_grey"
                 android:textSize="20sp"/>
         </RelativeLayout>
 
@@ -129,6 +173,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="10dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/bottom_divider" >
             <TextView
                 android:id="@+id/your_token_text"
@@ -137,13 +183,13 @@
                 android:gravity="center_horizontal"
                 android:text="Your token:"
                 android:textSize="20sp"
+                android:textColor="@color/text_grey"
                 app:layout_constraintStart_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="parent"/>
             <RelativeLayout
                 android:id="@+id/your_token_layout_outside"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:layout_marginVertical="5dp"
                 android:layout_below="@+id/your_token_text"
                 android:gravity="center_horizontal">
 
@@ -153,7 +199,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/counter_background_3"
                     android:gravity="center"
-                    android:translationZ="1dp">
+                    android:translationZ="2dp">
 
                     <TextView
                         android:id="@+id/your_token_value"
@@ -161,7 +207,7 @@
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
                         android:text="ABCDE"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:textSize="@dimen/counter_monitor_font_size" />
                 </RelativeLayout>
             </RelativeLayout>

@@ -1,4 +1,4 @@
-package com.helkor.project.buttons;
+package com.helkor.project.input.buttons;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
@@ -8,20 +8,23 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.helkor.project.R;
-import com.helkor.project.buttons.Utils.HideToColor;
-import com.helkor.project.buttons.Utils.LittleButton;
+import com.helkor.project.input.buttons.Utils.HideToColor;
+import com.helkor.project.input.buttons.Utils.LittleButton;
 
-public class ConnectionButton extends LittleButton {
+
+public class ClearButton extends LittleButton {
+
+    private final ImageButton button_view;
+
+    ValueAnimator colorAnimation;
 
     private final int COLOR_MAIN;
     private final int COLOR_DRAW;
     private final int COLOR_VIEW;
     private final long ANIMATION_DURATION = 500;
-    ValueAnimator colorAnimation;
-    private final ImageButton button_view;
 
-    public ConnectionButton(Activity activity, Object implementation_context, int button_view_id, int button_show_id, int button_hide_id) {
-        super(activity, implementation_context, button_show_id, button_hide_id);
+    public ClearButton(Activity activity, Object implementation_context, int button_view_id, int button_show_id, int button_hide_id){
+        super(activity,implementation_context,button_show_id,button_hide_id);
         button_view = activity.findViewById(button_view_id);
         setOnClickListener(button_view);
         COLOR_MAIN = activity.getColor(R.color.light_red);

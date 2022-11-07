@@ -10,9 +10,9 @@
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="?colorPrimary"
         android:translationZ="90dp"
-        android:visibility="invisible">
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/loading"
@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="Loading..."
-            android:textColor="#FFFFFF"
+            android:textColor="?colorOnSecondary"
             android:textSize="30sp" />
 
     </RelativeLayout>
@@ -35,7 +35,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
+        tools:visibility="visible"
+        android:clipToPadding="false"
+        android:clipChildren="false">
 
         <RelativeLayout
             android:id="@+id/pedometer_layout_outside"
@@ -47,7 +49,7 @@
             android:gravity="center">
 
             <RelativeLayout
-                android:translationZ="5dp"
+                android:translationZ="2dp"
                 android:id="@+id/pedometer_layout"
                 android:layout_width="@dimen/counter_monitor_width"
                 android:layout_height="match_parent"

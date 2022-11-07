@@ -1,4 +1,4 @@
-package com.helkor.project.buttons.Utils;
+package com.helkor.project.input.buttons.Utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

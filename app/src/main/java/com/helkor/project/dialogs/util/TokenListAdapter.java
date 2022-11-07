@@ -65,21 +65,18 @@ public class TokenListAdapter extends RecyclerView.Adapter<TokenListAdapter.View
         public String token;
         ViewHolder(View view){
             super(view);
-            System.out.println(view.toString() + "view holder string");
             rejectButton = view.findViewById(R.id.clear_token_button);
             acceptButton = view.findViewById(R.id.accept_token_button);
             tokenValue = view.findViewById(R.id.token_value);
             rejectButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.out.println(token + " is clicked");
                     listener.onRejectClick(token);
                 }
             });
             acceptButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.out.println(token + " is clicked");
                     listener.onAcceptClick(token);
                 }
             });

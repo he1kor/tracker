@@ -10,6 +10,7 @@ import com.yandex.mapkit.map.MapObjectCollection;
 import com.yandex.mapkit.map.PolylineMapObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LineDrawer implements LocationSensor.UpdateListener,TouchSensor.Listener {
 
@@ -125,6 +126,12 @@ public class LineDrawer implements LocationSensor.UpdateListener,TouchSensor.Lis
     }
     public void buildToPoint(Point point){
         buildToPoint(point,false);
+    }
+    public void createRoute(List<Point> points){
+        route.clear();
+        route.setRoutePoints(points);
+        System.out.println(route.getPoints());
+        update();
     }
 
     public void checkForTravelled(Point current_position, double accuracy) {

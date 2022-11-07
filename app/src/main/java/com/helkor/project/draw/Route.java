@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Route {
 
-    ArrayList<Point> routePoints;
+    List<Point> routePoints;
     private double path;
     private double travelled_path;
     private int travelled_index;
@@ -37,6 +37,12 @@ public class Route {
         intermediate_multiplier = 0;
         is_last_segment_divided = false;
         routePoints = new ArrayList<>();
+    }
+
+    private void calculatePath(){
+        for (int i = 0; i < routePoints.size()-1; i++) {
+            path += getDistance(i,i+1);
+        }
     }
 
 
@@ -183,7 +189,10 @@ public class Route {
             travelSubStep(intermediate_point);
         }
     }
-
+    protected void setRoutePoints(List<Point> points){
+        routePoints = points;
+        calculatePath();
+    }
 
     protected void clear(){
         resetTravelledPath();

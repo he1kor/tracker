@@ -2,7 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <RelativeLayout
         android:id="@+id/token_layout_outside"
@@ -12,7 +15,7 @@
         android:gravity="center"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" >
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageButton
             android:id="@+id/clear_token_button"
@@ -23,6 +26,7 @@
             android:scaleType="centerInside"
             android:src="@drawable/icon_trash"
             android:background="@drawable/circle_variant_3"
+            android:translationZ="2dp"
             app:tint="#FFFFFF">
         </ImageButton>
         <RelativeLayout
@@ -32,7 +36,7 @@
             android:layout_toEndOf="@id/clear_token_button"
             android:background="@drawable/counter_background_3"
             android:layout_centerVertical="true"
-            android:translationZ="5dp">
+            android:translationZ="2dp">
 
             <TextView
                 android:id="@+id/token_value"
@@ -53,6 +57,7 @@
             android:scaleType="centerInside"
             android:src="@drawable/check_mark"
             android:background="@drawable/circle_variant_3"
+            android:translationZ="2dp"
             app:tint="#FFFFFF">
         </ImageButton>
     </RelativeLayout>

@@ -15,10 +15,11 @@ public class Background {
     private static ValueAnimator value_animator;
     private static boolean loaded = false;
     public static void vanishing(Activity activity){
+        setLoaded(true);
         Animation animation = AnimationUtils.loadAnimation(activity, R.anim.background_vanishing);
         activity.findViewById(R.id.background).startAnimation(animation);
     }
-    public static void start(){
+    private static void start(){
         value_animator.start();
     }
     public static void loadAnimationLoadingText(Activity activity){
@@ -66,7 +67,7 @@ public class Background {
         });
         start();
     }
-    public static void setLoaded(boolean loaded){
+    private static void setLoaded(boolean loaded){
         Background.loaded = loaded;
     }
 }

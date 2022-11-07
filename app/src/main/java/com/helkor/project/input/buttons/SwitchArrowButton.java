@@ -1,4 +1,4 @@
-package com.helkor.project.buttons;
+package com.helkor.project.input.buttons;
 
 
 import android.app.Activity;
@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.helkor.project.R;
-import com.helkor.project.buttons.Utils.ButtonVariant;
-import com.helkor.project.buttons.Utils.LittleButton;
+import com.helkor.project.input.buttons.Utils.ButtonVariant;
+import com.helkor.project.input.buttons.Utils.LittleButton;
 
 
 public class SwitchArrowButton extends LittleButton {

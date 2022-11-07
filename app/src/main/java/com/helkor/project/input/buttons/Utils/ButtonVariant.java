@@ -1,4 +1,4 @@
-package com.helkor.project.buttons.Utils;
+package com.helkor.project.input.buttons.Utils;
 import java.util.Arrays;
 
 public class ButtonVariant<T> extends Deck<T>{

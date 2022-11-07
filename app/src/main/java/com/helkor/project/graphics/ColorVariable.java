@@ -1,7 +1,7 @@
 package com.helkor.project.graphics;
 
 public interface ColorVariable {
-    public enum Variant{
+    enum Variant{
         MAIN,
         DRAW,
         VIEW,
