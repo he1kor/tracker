@@ -8,6 +8,9 @@ import com.yandex.mapkit.ScreenPoint;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.mapview.MapView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TouchSensor {
 
     private float x;
@@ -16,26 +19,39 @@ public class TouchSensor {
     private final View drawable_relative;
     private final MapView map_view;
 
-    public interface Listener{
+    public interface OnTouchListener{
         void onTouch(Point point,boolean isTemp);
     }
-    Listener listener;
+    public interface OnClickListener{
+        void onClick(Point point);
+    }
+    List<OnTouchListener> onTouchListeners;
+    List<OnClickListener> onClickListeners;
 
     private Point point = new Point(0,0);
-    public TouchSensor(Object implementation_context,View drawable_relative, MapView map_view) {
+    public TouchSensor(View drawable_relative, MapView map_view) {
 
         this.drawable_relative = drawable_relative;
         turnOff();
         this.map_view = map_view;
-        trySetListener(implementation_context);
+        onClickListeners = new ArrayList<>();
+        onTouchListeners = new ArrayList<>();
         Listener();
     }
-    private void trySetListener(Object implementation_context){
+    public void addOnTouchListener(Object implementation_context){
         try {
-            listener = (Listener) implementation_context;
+            onTouchListeners.add((OnTouchListener) implementation_context);
         } catch (ClassCastException e){
             throw new RuntimeException(implementation_context.toString()
-                    + " must implement Listener");
+                    + " must implement OnTouchListener");
+        }
+    }
+    public void addOnClickListener(Object implementation_context){
+        try {
+            onClickListeners.add((OnClickListener) implementation_context);
+        } catch (ClassCastException e){
+            throw new RuntimeException(implementation_context.toString()
+                    + " must implement OnClickListener");
         }
     }
     @SuppressLint("ClickableViewAccessibility")
@@ -46,10 +62,23 @@ public class TouchSensor {
                 x = event.getX();
                 y = event.getY();
                 point = map_view.screenToWorld(new ScreenPoint(x,y));
-                listener.onTouch(point,true);
+                TouchSensor.this.onTouch(point,true);
+                if (event.getAction() == MotionEvent.ACTION_UP){
+                    onClick(point);
+                }
                 return true;
             }
         });
+    }
+    private void onTouch(Point point, boolean isTemp){
+        for (OnTouchListener listener : onTouchListeners) {
+            listener.onTouch(point,isTemp);
+        }
+    }
+    private void onClick(Point point){
+        for (OnClickListener listener : onClickListeners) {
+            listener.onClick(point);
+        }
     }
     public void turnOn(){
         drawable_relative.setVisibility(View.VISIBLE);

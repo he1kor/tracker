@@ -5,7 +5,8 @@ import android.graphics.Color;
 import com.yandex.mapkit.map.PolylineMapObject;
 
 public class Palette {
-    private static final int SUB_PALETTES_AMOUNT = 2;
+    private static final int SUB_PALETTES_AMOUNT = 3;
+    public static final int PALETTE_YELLOW = 2;
     public static final int PALETTE_RED = 1;
     public static final int PALETTE_GREEN = 0;
 
@@ -25,6 +26,7 @@ public class Palette {
     private static int getSubColor(int subPaletteIndex,int i, int resolution){
         if (subPaletteIndex == 0) return getGreenSubColor(i,resolution);
         else if (subPaletteIndex == 1) return getRedSubColor(i,resolution);
+        else if (subPaletteIndex == 2) return getYellowSubColor(i,resolution);
         return 0;
     }
 
@@ -44,5 +46,13 @@ public class Palette {
                 (int) Math.round(255 * (double) i / resolution),
                 5,
                 155);
+    }
+    private static int getYellowSubColor(int i, int resolution) {
+        //2 index
+        return Color.argb(
+                (int) Math.round(100 + (100 * (double) i / resolution)),
+                (int) Math.round(155 + (100 * (double) i / resolution)),
+                (int) Math.round(130 + (125 * (double) i / resolution)),
+                55);
     }
 }

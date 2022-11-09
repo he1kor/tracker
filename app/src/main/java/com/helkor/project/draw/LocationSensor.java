@@ -21,13 +21,14 @@ import com.yandex.mapkit.mapview.MapView;
 
 public class LocationSensor{
 
+    private final MarkDrawer markDrawer;
     private LocationListener location_listener;
     private final MapView map_view;
     private final MapKit map_kit;
     private Map map;
     private ShortLocationArray last_locations;
     private Point last_sent_point;
-    private final int MAX_CHECK_LINE = 3;
+    private final int MAX_CHECK_LINE = 1;
 
     private boolean is_drawable = false;
     private boolean is_walkable = false;
@@ -44,13 +45,15 @@ public class LocationSensor{
         void onCameraInitialized();
     }
 
+
     private boolean expecting_location;
     private float expecting_zoom;
 
     private LocationManager location_manager;
 
-    private Point my_location;
-    public LocationSensor(Object update_listener_implementation_context,Object camera_listener_implementation_context,MapView map_view, MapKit map_kit,float COMFORTABLE_ZOOM_LEVEL){
+    private Location my_location;
+    public LocationSensor(Object update_listener_implementation_context,Object camera_listener_implementation_context,MapView map_view, MapKit map_kit,float COMFORTABLE_ZOOM_LEVEL,MarkDrawer markDrawer){
+        this.markDrawer = markDrawer;
         this.map_kit = map_kit;
         this.map_view = map_view;
         this.map = map_view.getMap();
@@ -58,6 +61,7 @@ public class LocationSensor{
         last_locations = new ShortLocationArray(MAX_CHECK_LINE);
         tryAddUpdateListener(update_listener_implementation_context);
         tryAddCameraInitListener(camera_listener_implementation_context);
+
         initializeLocationListener();
     }
     private void tryAddUpdateListener(Object implementation_context){
@@ -86,6 +90,7 @@ public class LocationSensor{
             @Override
             public void onLocationUpdated(@NonNull Location location) {
                 last_locations.add(location);
+
                 if (is_walkable) {
                     update_listener.onPointTravelled(location.getPosition(),location.getAccuracy());
                 }
@@ -99,7 +104,7 @@ public class LocationSensor{
                     moveCamera(location.getPosition(), expecting_zoom,1);
                     setExpectingLocation(false);
                 }
-                my_location = location.getPosition();
+                my_location = location;
             }
 
             @Override
@@ -115,7 +120,7 @@ public class LocationSensor{
         double DESIRED_ACCURACY = 0;
         long MINIMAL_TIME = 0;
         double MINIMAL_DISTANCE = 0.5;
-        boolean USE_IN_BACKGROUND = false;
+        boolean USE_IN_BACKGROUND = true;
         location_manager.subscribeForLocationUpdates(DESIRED_ACCURACY, MINIMAL_TIME,
                 MINIMAL_DISTANCE, USE_IN_BACKGROUND, FilteringMode.OFF, location_listener);
     }
@@ -149,14 +154,12 @@ public class LocationSensor{
         }
     }
     private void firstMoveCamera(Point point, float zoom){
-        System.out.println("started");
         map.move(
                 new CameraPosition(point, zoom, 0.0f, 0.0f),
                 new Animation(Animation.Type.LINEAR, 0),
                 new Map.CameraCallback() {
                     @Override
                     public void onMoveFinished(boolean b) {
-                        System.out.println("finished");
                         camera_init_listener.onCameraInitialized();
                     }
                 }
@@ -173,7 +176,7 @@ public class LocationSensor{
     public boolean isExpectingLocation() {
         return expecting_location;
     }
-    public Point getMyLocation() {
+    public Location getMyLocation() {
         return my_location;
     }
 

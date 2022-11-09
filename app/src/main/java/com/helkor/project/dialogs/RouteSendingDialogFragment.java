@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.helkor.project.R;
 import com.helkor.project.dialogs.util.DownloadModes;
 import com.helkor.project.input.buttons.SwitchArrowButton;
-import com.helkor.project.input.buttons.TokenEditText;
+import com.helkor.project.input.TokenEditText;
 import com.helkor.project.input.buttons.Utils.LittleButton;
 import com.helkor.project.dialogs.util.TokenListAdapter;
 

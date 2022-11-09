@@ -18,7 +18,7 @@ public class Point {
         }
         return pojoPoints;
     }
-    public static List<com.yandex.mapkit.geometry.Point> convertPOJOToMapkit(Point[] points){
+    public static List<com.yandex.mapkit.geometry.Point> convertPOJOToMapkit(List<Point> points){
         List<com.yandex.mapkit.geometry.Point> pojoPoints = new ArrayList<>();
         for (Point point : points) {
             pojoPoints.add(new com.yandex.mapkit.geometry.Point(point.getLatitude(),point.getLongitude()));

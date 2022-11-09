@@ -14,6 +14,7 @@ import com.helkor.project.dialogs.util.DownloadModes;
 import com.helkor.project.dialogs.util.MiniTimer;
 import com.helkor.project.dialogs.util.TokenListAdapter;
 import com.helkor.project.draw.LineDrawer;
+import com.helkor.project.draw.MarkDrawer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,22 +32,23 @@ public class RouteSender implements WebSocketListener, TokenUsable, TokenListAda
     private Activity activity;
     private RouteSendingDialogFragment routeSendingDialogFragment;
     private WebSocketController webSocketController;
-    private boolean waitingForRoute;
     private MiniTimer miniTimer;
     private LineDrawer lineDrawer;
+    private MarkDrawer markDrawer;
     private String myToken;
     private DownloadModes downloadMode;
     private List<com.yandex.mapkit.geometry.Point> route;
+    private List<com.yandex.mapkit.geometry.Point> markPoints;
 
-    public RouteSender(LineDrawer lineDrawer,Activity activity){
+    public RouteSender(LineDrawer lineDrawer, MarkDrawer markDrawer, Activity activity){
         this.activity = activity;
         webSocketController = new WebSocketController();
         webSocketController.setWebSocketConnection();
         webSocketController.setWebSocketListener(this);
-        waitingForRoute = false;
         downloadMode = DownloadModes.inputMode;
         miniTimer = new MiniTimer(this);
         this.lineDrawer = lineDrawer;
+        this.markDrawer = markDrawer;
     }
 
     public void goToRouteSender(AppCompatActivity activity){
@@ -85,7 +87,7 @@ public class RouteSender implements WebSocketListener, TokenUsable, TokenListAda
     }
     @Override
     public void onAcceptClick(String token) {
-        RouteData routeData = new RouteData(lineDrawer.getRoute().getPoints(),token.toLowerCase(Locale.ROOT));
+        RouteData routeData = new RouteData(Point.convertMapkitToPOJO(lineDrawer.getMainRoute().getPoints()),Point.convertMapkitToPOJO(markDrawer.getMarkPoints()),token.toLowerCase(Locale.ROOT));
         webSocketController.sendMessage(Message.toJson(Command.c_sendRoute,new Gson().toJson(routeData)));
         removeToken(token);
     }
@@ -109,7 +111,6 @@ public class RouteSender implements WebSocketListener, TokenUsable, TokenListAda
         downloadMode = DownloadModes.timerMode;
         routeSendingDialogFragment.setDownloadMode(downloadMode);
         webSocketController.sendMessage(Message.toJson(Command.c_requestRoute, token.toLowerCase(Locale.ROOT)));
-        waitingForRoute = true;
     }
 
     @Override
@@ -135,6 +136,7 @@ public class RouteSender implements WebSocketListener, TokenUsable, TokenListAda
     @Override
     public void onAcceptRoute() {
         lineDrawer.createRoute(route);
+        markDrawer.setPoints(markPoints);
         miniTimer.removeTimer();
         route = null;
         enteredToken = "";
@@ -172,7 +174,9 @@ public class RouteSender implements WebSocketListener, TokenUsable, TokenListAda
     }
 
     private void getRoute(String data){
-        route = Point.convertPOJOToMapkit(new Gson().fromJson(data, Point[].class));
+        RouteData routeData = new Gson().fromJson(data,RouteData.class);
+        route = Point.convertPOJOToMapkit(routeData.getPoints());
+        markPoints = Point.convertPOJOToMapkit(routeData.getMarkPoints());
         downloadMode = DownloadModes.readyMode;
         routeSendingDialogFragment.setDownloadMode(downloadMode);
     }

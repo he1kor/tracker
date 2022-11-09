@@ -9,9 +9,12 @@ import androidx.fragment.app.DialogFragment;
 
 import com.helkor.project.R;
 import com.helkor.project.activities.MainActivity;
+import com.helkor.project.draw.MarkDrawer;
+import com.helkor.project.input.buttons.AddMarkButton;
 import com.helkor.project.input.buttons.ClearButton;
 import com.helkor.project.input.buttons.ConnectionButton;
 import com.helkor.project.input.buttons.SwitchInputButton;
+import com.helkor.project.input.buttons.SwitchTravellingButton;
 import com.helkor.project.input.buttons.Utils.LittleButton;
 import com.helkor.project.input.buttons.MainButton;
 import com.helkor.project.connection.websocket.RouteSender;
@@ -29,6 +32,7 @@ import com.helkor.project.monitors.util.PathString;
 import com.helkor.project.monitors.util.Time;
 import com.helkor.project.monitors.util.Timer;
 import com.yandex.mapkit.MapKit;
+import com.yandex.mapkit.geometry.Point;
 
 
 public class Controller implements LocationSensor.CameraInitListener,LineDrawer.FinishListener,Timer.Listener, MainButton.Listener,LittleButton.Listener, ClearConfirmDialogFragment.Listener, LeaveWalkingConfirmDialogFragment.Listener {
@@ -47,6 +51,7 @@ public class Controller implements LocationSensor.CameraInitListener,LineDrawer.
     protected NavigatorState navigator_state;
 
     protected LineDrawer line_drawer;
+    protected MarkDrawer markDrawer;
 
     protected LocationSensor location_sensor;
     protected TouchSensor map_sensor;
@@ -57,7 +62,9 @@ public class Controller implements LocationSensor.CameraInitListener,LineDrawer.
 
     protected MainButton main_button;
     protected SwitchInputButton button_switch_input;
+    protected SwitchTravellingButton button_switch_travel;
     protected ClearButton button_clear;
+    protected AddMarkButton button_add_mark;
 
     protected ModeState mode_state;
     String baseUrl = "https://doggygo.herokuapp.com/";
@@ -73,19 +80,22 @@ public class Controller implements LocationSensor.CameraInitListener,LineDrawer.
 
     public void setup(){
 
-
         counter_monitor = new CounterMonitor(main_activity,R.id.pedometer_layout_outside,R.id.pedometer_layout,R.id.pedometer_text1,R.id.pedometer_text2);
         timer = new Timer(this);
         path_string = new PathString(counter_monitor, PathString.BOTTOM);
         line_drawer = new LineDrawer(map_state);
-        routeSender = new RouteSender(line_drawer,main_activity);
+        markDrawer = new MarkDrawer(map_state,main_activity,line_drawer);
+        routeSender = new RouteSender(line_drawer,markDrawer,main_activity);
 
         navigator_state = new NavigatorState(getActivity(),map_state);
-        location_sensor = new LocationSensor(line_drawer,this,map_state.getMapView(),map_kit,COMFORTABLE_ZOOM_LEVEL);
-        map_sensor = new TouchSensor(line_drawer,getActivity().findViewById(R.id.relative_layout_1),map_state.getMapView());
+        location_sensor = new LocationSensor(line_drawer,this,map_state.getMapView(),map_kit,COMFORTABLE_ZOOM_LEVEL,markDrawer);
+        map_sensor = new TouchSensor(getActivity().findViewById(R.id.relative_layout_1),map_state.getMapView());
+        map_sensor.addOnTouchListener(line_drawer);
+        map_sensor.addOnTouchListener(markDrawer);
+        map_sensor.addOnClickListener(markDrawer);
 
-        line_drawer.addPathListener(path_string);
-        line_drawer.addFinishListener(this);
+        line_drawer.setPathListener(path_string);
+        line_drawer.setFinishListener(this);
         Background.loadAnimationLoadingText(main_activity);
     }
 
@@ -103,7 +113,10 @@ public class Controller implements LocationSensor.CameraInitListener,LineDrawer.
 
         main_button = new MainButton(main_activity,this,R.id.button_start, R.anim.button_float);
 
+        button_switch_travel = new SwitchTravellingButton(main_activity,this,R.id.button_switch_travel,R.anim.switch_travel_button_float_show,R.anim.switch_travel_button_float_hide);
         button_switch_input = new SwitchInputButton(main_activity,this,R.id.button_switch_input,R.anim.switch_input_button_float_show,R.anim.switch_input_button_float_hide);
+
+        button_add_mark = new AddMarkButton(main_activity,this,R.id.button_add_mark,R.anim.add_mark_button_float_show,R.anim.add_mark_button_float_hide);
         button_clear = new ClearButton(main_activity,this,R.id.button_clear,R.anim.clear_button_float_show,R.anim.clear_button_float_hide);
         button_connection = new ConnectionButton(main_activity,this,R.id.button_connection,R.anim.connection_button_float_show,R.anim.connection_button_float_hide);
 
@@ -169,6 +182,25 @@ public class Controller implements LocationSensor.CameraInitListener,LineDrawer.
             case R.id.button_connection:
                 routeSender.goToRouteSender(main_activity);
                 break;
+            case R.id.button_switch_travel:
+                line_drawer.switchTravelModes();
+                button_switch_travel.nextVariant();
+                break;
+            case R.id.button_add_mark:
+                if (button_add_mark.isHoldable()){
+                    if (button_add_mark.isHold()){
+                        button_add_mark.unHold();
+                        line_drawer.setDrawable(true);
+                        markDrawer.setDrawable(false);
+                    } else{
+                        button_add_mark.hold();
+                        line_drawer.setDrawable(false);
+                        markDrawer.setDrawable(true);
+                    }
+                } else {
+                    markDrawer.addItemMark(location_sensor.getMyLocation());
+                }
+                break;
         }
 
     }
@@ -181,6 +213,7 @@ public class Controller implements LocationSensor.CameraInitListener,LineDrawer.
         switch (dialog.getTag()) {
             case "ClearConfirmDialogFragment":
                 line_drawer.clear();
+                markDrawer.clear();
                 break;
             case "LeaveWalkingConfirmation":
             case "LeavePauseConfirmation":

@@ -1,4 +1,4 @@
-package com.helkor.project.input.buttons;
+package com.helkor.project.input;
 
 import android.text.InputFilter;
 import android.view.KeyEvent;

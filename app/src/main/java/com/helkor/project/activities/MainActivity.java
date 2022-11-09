@@ -86,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements AskForSettingsDia
         controller.onStop();
         super.onStop();
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     protected void onStart() {

@@ -6,47 +6,34 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageButton;
+
 import com.helkor.project.R;
-import com.helkor.project.input.buttons.Utils.ButtonVariant;
 import com.helkor.project.input.buttons.Utils.HideToColor;
 import com.helkor.project.input.buttons.Utils.LittleButton;
 
 
-public class SwitchInputButton extends LittleButton {
+public class AddMarkButton extends LittleButton {
 
-    ButtonVariant<Variant> button_variant;
     private final ImageButton button_view;
 
     ValueAnimator colorAnimation;
 
-    public final int COLOR_MAIN;
-    public final int COLOR_DRAW;
-    public final int COLOR_VIEW;
+    private final int COLOR_MAIN;
+    private final int COLOR_DRAW;
+    private final int COLOR_VIEW;
     private final long ANIMATION_DURATION = 500;
+    private boolean isHoldable;
+    private boolean isHold;
 
-    public enum Variant{
-        DRAW,
-        GPS
-    }
-    public SwitchInputButton(Activity activity, Object implementation_context, int button_view_id, int button_show_id, int button_hide_id){
+    public AddMarkButton(Activity activity, Object implementation_context, int button_view_id, int button_show_id, int button_hide_id){
         super(activity,implementation_context,button_show_id,button_hide_id);
+        isHoldable = false;
+        isHold = false;
         button_view = activity.findViewById(button_view_id);
         setOnClickListener(button_view);
-        button_variant = new ButtonVariant<>(Variant.class);
         COLOR_MAIN = activity.getColor(R.color.light_red);
         COLOR_DRAW = activity.getColor(R.color.lilac);
         COLOR_VIEW = activity.getColor(R.color.yellow);
-        updateView();
-    }
-    private void updateView(){
-        switch (getVariant()) {
-            case DRAW:
-                button_view.setImageResource(R.drawable.icon_draw_mode);
-                break;
-            case GPS:
-                button_view.setImageResource(R.drawable.icon_gps_mode);
-                break;
-        }
     }
     @Override
     public void show(){
@@ -69,6 +56,14 @@ public class SwitchInputButton extends LittleButton {
         }
         throw new RuntimeException("Unknown color");
     }
+    public void hold(){
+        isHold = true;
+        button_view.setImageResource(R.drawable.plus_unhold);
+    }
+    public void unHold(){
+        isHold = false;
+        button_view.setImageResource(R.drawable.curve);
+    }
     public void hideWithColor(HideToColor hide_to_color){
         int color_to = getColor(hide_to_color);
         hide();
@@ -83,12 +78,23 @@ public class SwitchInputButton extends LittleButton {
         });
         colorAnimation.start();
     }
-    public Variant nextVariant(){
-        Variant variant = button_variant.next();
-        updateView();
-        return variant;
+
+    public boolean isHoldable() {
+        return isHoldable;
     }
-    public Variant getVariant() {
-        return button_variant.face();
+
+    public void setHoldable(boolean holdable) {
+        isHoldable = holdable;
+        if (!isHoldable){
+            hold();
+        }
+    }
+
+    public boolean isHold() {
+        return isHold;
+    }
+
+    public void setHold(boolean hold) {
+        isHold = hold;
     }
 }

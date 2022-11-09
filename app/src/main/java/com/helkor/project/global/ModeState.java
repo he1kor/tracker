@@ -7,6 +7,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 
 import com.helkor.project.input.buttons.SwitchInputButton;
+import com.helkor.project.input.buttons.SwitchTravellingButton;
 import com.helkor.project.input.buttons.Utils.HideToColor;
 import com.helkor.project.dialogs.LeaveWalkingConfirmDialogFragment;
 import com.helkor.project.graphics.ColorVariable;
@@ -182,7 +183,7 @@ public class ModeState {
         controller.location_sensor.setDrawable(false);
         offWalkable();
 
-        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation(), controller.COMFORTABLE_ZOOM_LEVEL+1,3);
+        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation().getPosition(), controller.COMFORTABLE_ZOOM_LEVEL+1,3);
     }
 
     private void goFromMainToDraw(){
@@ -192,6 +193,7 @@ public class ModeState {
         controller.button_connection.show();
         controller.button_switch_input.show();
         controller.button_clear.show();
+        controller.button_add_mark.show();
         if (controller.button_switch_input.getVariant() == SwitchInputButton.Variant.GPS){
             setNavigatorDrawMode();
         } else if (controller.button_switch_input.getVariant() == SwitchInputButton.Variant.DRAW){
@@ -202,6 +204,7 @@ public class ModeState {
     private void goFromMainToWalk(){
         current_mode = Mode.WALK;
 
+        controller.button_switch_travel.show();
         controller.path_string.setTravelledPathEnabled(true);
         updateUI(ColorVariable.Variant.WALK);
         onWalkSection();
@@ -217,8 +220,9 @@ public class ModeState {
         controller.button_connection.hideWithColor(HideToColor.MAIN);
         controller.button_switch_input.hideWithColor(HideToColor.MAIN);
         controller.button_clear.hideWithColor(HideToColor.MAIN);
+        controller.button_add_mark.hideWithColor(HideToColor.MAIN);
 
-        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation(), controller.COMFORTABLE_ZOOM_LEVEL+1,1);
+        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation().getPosition(), controller.COMFORTABLE_ZOOM_LEVEL+1,1);
     }
 
     private void goFromDrawToView(){
@@ -228,6 +232,7 @@ public class ModeState {
         controller.button_connection.hideWithColor(HideToColor.VIEW);
         controller.button_switch_input.hideWithColor(HideToColor.VIEW);
         controller.button_clear.hideWithColor(HideToColor.VIEW);
+        controller.button_add_mark.hideWithColor(HideToColor.VIEW);
 
         updateUI(ColorVariable.Variant.VIEW);
     }
@@ -238,7 +243,7 @@ public class ModeState {
 
         updateUI(ColorVariable.Variant.MAIN);
 
-        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation(), controller.COMFORTABLE_ZOOM_LEVEL+1,1);
+        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation().getPosition(), controller.COMFORTABLE_ZOOM_LEVEL+1,1);
     }
 
     private void goFromViewToDraw(){
@@ -249,6 +254,7 @@ public class ModeState {
         controller.button_connection.show();
         controller.button_switch_input.show();
         controller.button_clear.show();
+        controller.button_add_mark.show();
 
         checkoutDrawMode();
     }
@@ -273,8 +279,9 @@ public class ModeState {
     private void goFromWalkToMain(){
         current_mode = Mode.MAIN;
         offWalkSection();
-        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation(), controller.COMFORTABLE_ZOOM_LEVEL + 1, 1);
+        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation().getPosition(), controller.COMFORTABLE_ZOOM_LEVEL + 1, 1);
 
+        controller.button_switch_travel.hideWithColor(controller.button_switch_travel.COLOR_RUN,HideToColor.MAIN);
         updateUI(ColorVariable.Variant.MAIN);
 
         controller.path_string.setTravelledPathEnabled(false);
@@ -287,6 +294,7 @@ public class ModeState {
     private void goFromWalkToPause(){
         current_mode = Mode.PAUSE;
         updateUI(ColorVariable.Variant.PAUSE);
+        controller.button_switch_travel.changeColor(controller.button_switch_travel.COLOR_RUN,controller.button_switch_travel.COLOR_PAUSE);
 
         offWalkable();
         controller.timer.pause();
@@ -313,8 +321,9 @@ public class ModeState {
         current_mode = Mode.MAIN;
 
         controller.path_string.setTravelledPathEnabled(false);
+        controller.button_switch_travel.hideWithColor(controller.button_switch_travel.COLOR_PAUSE,HideToColor.MAIN);
         offWalkSection();
-        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation(), controller.COMFORTABLE_ZOOM_LEVEL + 1, 1);
+        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation().getPosition(), controller.COMFORTABLE_ZOOM_LEVEL + 1, 1);
 
         updateUI(ColorVariable.Variant.MAIN);
 
@@ -322,6 +331,8 @@ public class ModeState {
     }
     private void goFromPauseToWalk(){
         current_mode = Mode.WALK;
+
+        controller.button_switch_travel.changeColor(controller.button_switch_travel.COLOR_PAUSE,controller.button_switch_travel.COLOR_RUN);
 
         controller.timer.resume();
         updateUI(ColorVariable.Variant.WALK);
@@ -333,9 +344,10 @@ public class ModeState {
     private void goFromFinishToMain(){
         current_mode = Mode.MAIN;
 
+        controller.button_switch_travel.hideWithColor(controller.button_switch_travel.COLOR_RUN,HideToColor.MAIN);
         updateUI(ColorVariable.Variant.MAIN);
         offWalkSection();
-        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation(), controller.COMFORTABLE_ZOOM_LEVEL + 1, 1);
+        controller.location_sensor.moveCamera(controller.location_sensor.getMyLocation().getPosition(), controller.COMFORTABLE_ZOOM_LEVEL + 1, 1);
 
         controller.path_string.setTravelledPathEnabled(false);
 
@@ -368,9 +380,11 @@ public class ModeState {
     protected void leaveNavigatorDrawMode(){
         controller.location_sensor.setDrawable(false);
         controller.location_sensor.unSubscribeToLocationUpdate();
+
     }
     protected void leaveFingerDrawMode(){
         controller.map_sensor.turnOff();
+        controller.button_add_mark.setHoldable(false);
     }
     private void setNavigatorDrawMode(){
         current_draw_mode = DrawMode.LOCATION;
@@ -382,5 +396,9 @@ public class ModeState {
         current_draw_mode = DrawMode.FINGER;
         controller.line_drawer.setDivisionStep(4);
         controller.map_sensor.turnOn();
+        controller.button_add_mark.setHoldable(true);
+        if (!controller.markDrawer.isDrawable()){
+            controller.button_add_mark.unHold();
+        }
     }
 }
